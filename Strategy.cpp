@@ -8,9 +8,9 @@
 
 using namespace std;
 
-bool firstTime = true;
-const double TIME_LIMIT = 0.5;
-int step = 0;
+const double TIME_LIMIT = 1.5;
+static int step = 0;
+static int rounds = 0;
 
 
 void log(Node *node) {
@@ -97,8 +97,9 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
     time_t start = time(nullptr);
 
     step++;
-    if (firstTime) {
-        firstTime = false;
+    if (Node::root == nullptr || lastY < 0 || Node::root->children[lastY] == nullptr) {
+        step = 1;
+        rounds++;
         State::M = M;
         State::N = N;
         State::BAN_X = noX;
@@ -144,7 +145,7 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
     int actualSearches = 0;
     bool mustWin = false;
 #ifdef DEBUG
-    while (actualSearches < 100000) {
+    while (actualSearches < 10000) {
 #else
     while (difftime(time(nullptr), start) < TIME_LIMIT) {
 #endif
@@ -178,7 +179,7 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
     }
 
     std::cout << "\n########----------#########" << std::endl;
-    std::cout << "step " << step << std::endl;
+    std::cout << "Round " << rounds << " Step " << step << std::endl;
     std::cout << "Actual searches: " << actualSearches << std::endl;
     log(Node::root);
 
@@ -234,6 +235,7 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
     std::cout << "Best Value: " << bestValue << std::endl;
     log(Node::root);
 
+    std::cout << "Actual Time: " << difftime(time(nullptr), start) << std::endl;
 
     if (Node::root == nullptr) {
         std::cout << "Nullptr root" << std::endl;
