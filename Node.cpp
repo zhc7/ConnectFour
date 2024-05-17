@@ -8,7 +8,7 @@
 
 Node *Node::root = nullptr;
 
-Node::Node(const State &state) : state(state), children(), playerWins(0), visits(0) {
+Node::Node(const State &state) : state(state), playerWins(0), visits(0) {
     if (state.mustWin != 0) {
         handleMustWin(state.mustWin);
     }
@@ -16,10 +16,10 @@ Node::Node(const State &state) : state(state), children(), playerWins(0), visits
 
 void Node::handleMustWin(int winner) {
     if (winner == 1) {
-        playerWins = 1 << 20;
+        playerWins = 0;
         visits = 1 << 20;
     } else if (winner == 2) {
-        playerWins = 0;
+        playerWins = 1 << 20;
         visits = 1 << 20;
     } else if (winner == 3) {
         playerWins = 1 << 19;

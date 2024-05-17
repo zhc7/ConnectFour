@@ -81,16 +81,6 @@ int State::simulate() const {
     State newState(backupBoard, backupTop, nextTurn);
     while (true) {
         bool *avail = newState.available();
-        int count = 0;
-        for (int i = 0; i < N; i++) {
-            if (avail[i]) {
-                count++;
-            }
-        }
-        if (count == 0) {
-            delete avail;
-            return 0;
-        }
         int y = (int) random() % N;
         while (!avail[y]) {
             y = (y + 1) % N;
