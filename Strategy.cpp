@@ -1,13 +1,61 @@
 #include <iostream>
 #include <unistd.h>
+#include <vector>
 #include "Point.h"
 #include "Strategy.h"
+#include "Node.h"
+#include "State.h"
 
 using namespace std;
 
+bool firstTime = true;
+const double TIME_LIMIT = 0.5;
+int step = 0;
+
+
+void log(Node *node) {
+    std::cout
+            << "nextTurn: " << node->state.nextTurn << "\n"
+            << "wins: "
+            << Node::root->playerWins << " / "
+            << Node::root->visits << " = "
+            << (double) Node::root->playerWins / Node::root->visits
+            << "\n"
+            << "mustWin: " << node->state.mustWin << "\n"
+            << "children: \n";
+    for (int i = 0; i < 12; i++) {
+        std::cout
+                << "  " << i << ": ";
+        if (node->children[i] == nullptr) {
+            continue;
+        }
+        std::cout
+                << node->children[i]->playerWins << " / "
+                << node->children[i]->visits << " = "
+                << (double) node->children[i]->playerWins / node->children[i]->visits
+                << "M" << node->children[i]->state.mustWin
+                << ";";
+    }
+    std::cout << std::endl;
+}
+
+void log(int **board) {
+    for (int i = 0; i < State::M; i++) {
+        for (int j = 0; j < State::N; j++) {
+            if (State::BAN_X == i && State::BAN_Y == j)
+                std::cout << 'X';
+            else
+                std::cout << board[i][j];
+            std::cout << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
+
 /*
 	策略函数接口,该函数被对抗平台调用,每次传入当前状态,要求输出你的落子点,该落子点必须是一个符合游戏规则的落子点,不然对抗平台会直接认为你的程序有误
-	
+
 	input:
 		为了防止对对抗平台维护的数据造成更改，所有传入的参数均为const属性
 		M, N : 棋盘大小 M - 行数 N - 列数 均从0开始计， 左上角为坐标原点，行用x标记，列用y标记
@@ -27,64 +75,194 @@ using namespace std;
 		你的落子点Point
 */
 extern "C" Point *getPoint(const int M, const int N, const int *top, const int *_board,
-						   const int lastX, const int lastY, const int noX, const int noY)
-{
-	/*
-		不要更改这段代码
-	*/
-	int x = -1, y = -1; //最终将你的落子点存到x,y中
-	int **board = new int *[M];
-	for (int i = 0; i < M; i++)
-	{
-		board[i] = new int[N];
-		for (int j = 0; j < N; j++)
-		{
-			board[i][j] = _board[i * N + j];
-		}
-	}
+                           const int lastX, const int lastY, const int noX, const int noY) {
+    /*
+        不要更改这段代码
+    */
+    int x = -1, y = -1; //最终将你的落子点存到x,y中
+    int **board = new int *[M];
+    for (int i = 0; i < M; i++) {
+        board[i] = new int[N];
+        for (int j = 0; j < N; j++) {
+            board[i][j] = _board[i * N + j];
+        }
+    }
 
-	/*
-		根据你自己的策略来返回落子点,也就是根据你的策略完成对x,y的赋值
-		该部分对参数使用没有限制，为了方便实现，你可以定义自己新的类、.h文件、.cpp文件
-	*/
-	//Add your own code below
+    /*
+        根据你自己的策略来返回落子点,也就是根据你的策略完成对x,y的赋值
+        该部分对参数使用没有限制，为了方便实现，你可以定义自己新的类、.h文件、.cpp文件
+    */
+    //Add your own code below
 
-	//a naive example
-	for (int i = N-1; i >= 0; i--) {
-		if (top[i] > 0) {
-			x = top[i] - 1;
-			y = i;
-			break;
-		}
-	}
+    time_t start = time(nullptr);
 
-	/*
-		不要更改这段代码
-	*/
-	clearArray(M, N, board);
-	return new Point(x, y);
+    step++;
+    if (firstTime) {
+        firstTime = false;
+        State::M = M;
+        State::N = N;
+        State::BAN_X = noX;
+        State::BAN_Y = noY;
+//        int *board = new int[M * N];
+        int *top_copy = new int[N];
+//        for (int i = 0; i < M * N; i++) {
+//            board[i] = _board[i];
+//        }
+        for (int i = 0; i < N; i++) {
+            top_copy[i] = top[i];
+        }
+        auto *state = new State(board, top_copy, 2);
+        Node *node = new Node(*state);
+        Node::root = node;
+    } else {
+        Node::root = Node::root->pick(lastY);
+    }
+
+//    log(Node::root->state.board);
+
+    // compare board same
+//    bool same = true;
+//    for (int i = 0; i < M; i++) {
+//        for (int j = 0; j < N; j++) {
+//            if (board[i][j] != Node::root->state.board[i][j]) {
+//                same = false;
+//                break;
+//            }
+//        }
+//        if (!same) {
+//            break;
+//        }
+//    }
+//    if (!same) {
+//        std::cout << "Board not same! given, expect" << std::endl;
+//        log(board);
+//        std::cout << "==========" << std::endl;
+//        log(Node::root->state.board);
+//        std::cout << "==========" << std::endl;
+//    }
+
+    int actualSearches = 0;
+    bool mustWin = false;
+#ifdef DEBUG
+    while (actualSearches < 100000) {
+#else
+    while (difftime(time(nullptr), start) < TIME_LIMIT) {
+#endif
+        std::vector<Node *> path;
+        Node *node = Node::root;
+        path.push_back(node);
+        while (!node->isLeaf) {
+            node = node->select();
+            if (node->state.mustWin != 0) {
+                // here node does not change when selecting, pop this node, let its parent select again
+                path.pop_back();
+                if (path.empty()) {
+                    mustWin = true;
+                    break;
+                }
+                node = path.back();
+            } else {
+                path.push_back(node);
+            }
+        }
+        if (mustWin) {
+            break;
+        }
+        auto selected = node->expand();
+        path.push_back(selected);
+        int result = selected->state.simulate();
+        for (Node *n: path) {
+            n->update(result);
+        }
+        actualSearches++;
+    }
+
+    std::cout << "\n########----------#########" << std::endl;
+    std::cout << "step " << step << std::endl;
+    std::cout << "Actual searches: " << actualSearches << std::endl;
+    log(Node::root);
+
+    double bestValue = -1;
+    if (mustWin) {
+        int winner = Node::root->state.mustWin;
+        if (winner == 2) {
+            for (int i = 0; i < N; i++) {
+                auto child = Node::root->children[i];
+                if (child != nullptr && child->state.mustWin == 2) {
+                    y = i;
+                    break;
+                }
+            }
+        } else {
+            for (int i = 0; i < N; i++) {
+                auto child = Node::root->children[i];
+                if (child != nullptr) {
+                    y = i;
+                    if (child->state.mustWin == 3) {
+                        break;
+                    }
+                }
+            }
+        }
+    } else {
+        y = -1;
+        int best_y = -1;
+        for (Node *child: Node::root->children) {
+            y++;
+            if (child == nullptr || child->state.mustWin == 1) {
+                continue;
+            }
+            if (child->state.mustWin == 2) {
+                break;
+            }
+            double value = (double) child->playerWins / child->visits;
+            if (value > bestValue) {
+                bestValue = value;
+                best_y = y;
+            }
+        }
+        y = best_y;
+    }
+
+    x = top[y] - 1;
+
+    if (Node::root->children[y] == nullptr) {
+        Node::root->children[y] = new Node(*Node::root->state.step(y));
+    }
+    Node::root = Node::root->pick(y);
+    std::cout << "Selected: " << x << " " << y << std::endl;
+    std::cout << "Best Value: " << bestValue << std::endl;
+    log(Node::root);
+
+
+    if (Node::root == nullptr) {
+        std::cout << "Nullptr root" << std::endl;
+    }
+
+    /*
+        不要更改这段代码
+    */
+//	clearArray(M, N, board);
+    return new Point(x, y);
 }
 
 /*
 	getPoint函数返回的Point指针是在本so模块中声明的，为避免产生堆错误，应在外部调用本so中的
 	函数来释放空间，而不应该在外部直接delete
 */
-extern "C" void clearPoint(Point *p)
-{
-	delete p;
-	return;
+extern "C" void clearPoint(Point *p) {
+    delete p;
+    return;
 }
 
 /*
 	清除top和board数组
 */
-void clearArray(int M, int N, int **board)
-{
-	for (int i = 0; i < M; i++)
-	{
-		delete[] board[i];
-	}
-	delete[] board;
+void clearArray(int M, int N, int **board) {
+    for (int i = 0; i < M; i++) {
+        delete[] board[i];
+    }
+    delete[] board;
 }
 
 /*
