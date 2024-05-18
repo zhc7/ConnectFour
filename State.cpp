@@ -31,12 +31,10 @@ void State::_step(int y) {
     if (BAN_X == x - 1 && BAN_Y == y) {
         top[y]--;
     }
-    if (isTie(N, top)) {
+    if (available() == 0) {
         mustWin = 3;
-    } else if (nextTurn == 1 && userWin(x, y, M, N, board)) {
-        mustWin = 1;
-    } else if (nextTurn == 2 && machineWin(x, y, M, N, board)) {
-        mustWin = 2;
+    } else {
+        mustWin = win(x, y, M, N, board) ? nextTurn : (char) 0;
     }
     nextTurn = 3 - nextTurn;
 }

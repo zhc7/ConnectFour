@@ -41,12 +41,14 @@
 				2. 游戏以平局结束
 				对于以上这两种情况，我们可以用isTie函数进行进一步的判断
 */
-bool userWin(const int x, const int y, const int M, const int N, const Board &board);
+//bool userWin(const int x, const int y, const int M, const int N, const Board &board);
 
 /*
 	与userWin函数同理，可以参见上述注释
 */
-bool machineWin(const int x, const int y, const int M, const int N, const Board &board);
+//bool machineWin(const int x, const int y, const int M, const int N, const Board &board);
+
+bool win(const int x, const int y, const int M, const int N, const Board &board);
 
 /*
 	为了减少计算量，该函数通过直接检测棋盘是否已满来进行平局判断，而不是对棋盘进行全盘检测
