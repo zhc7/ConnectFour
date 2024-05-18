@@ -10,16 +10,16 @@
 
 class Node {
 public:
-    constexpr const static double UCB_C = 0.7;
+    constexpr static double UCB_C = 0.7;
     static Node *root;
 
     State state;
     Node *children[12]{};
-    double playerWins;
-    int visits;
+    double playerWins = 0;
+    int visits = 0;
     bool isLeaf = true;
 
-    explicit Node(const State &state);
+    Node() = default;
 
     double ucbValue(double logParentVisit) const;
 

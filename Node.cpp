@@ -8,12 +8,6 @@
 
 Node *Node::root = nullptr;
 
-Node::Node(const State &state) : state(state), playerWins(0), visits(0) {
-    if (state.mustWin != 0) {
-        handleMustWin(state.mustWin);
-    }
-}
-
 void Node::handleMustWin(char winner) {
     if (winner == 1) {
         playerWins = 0;
@@ -45,7 +39,7 @@ Node *Node::select() {
     Node *selected = nullptr;
     double bestValue = -1;
     char candidateMustWin = -1;
-    double logVisits = log(visits);
+    const double logVisits = log(visits);
     for (Node *child: children) {
         if (child == nullptr) {
             continue;
@@ -55,7 +49,8 @@ Node *Node::select() {
         if (child->state.mustWin == state.nextTurn) {
             handleMustWin(state.nextTurn);
             return this;
-        } else if (child->state.mustWin != 0) {
+        }
+        if (child->state.mustWin != 0) {
             continue;
         }
         double uctValue = child->ucbValue(logVisits);
@@ -72,7 +67,7 @@ Node *Node::select() {
 }
 
 Node *Node::expand() {
-    short avail = state.available();
+    const short avail = state.available();
     bool all = true;
     Node *selected = nullptr;
     for (int i = 0; i < State::N; i++) {
@@ -80,8 +75,8 @@ Node *Node::expand() {
             continue;
         }
         if (selected == nullptr) {
-            State *newState = state.step(i);
-            Node *child = new Node(*newState);
+            const auto child = new Node;
+            state.step(i, child->state);
             children[i] = child;
             if (child->state.mustWin == state.nextTurn) {
                 state.mustWin = state.nextTurn;

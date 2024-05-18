@@ -98,18 +98,19 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
 
     step++;
     if (Node::root == nullptr || lastY < 0 || Node::root->children[lastY] == nullptr) {
+        delete Node::root;
         step = 1;
         rounds++;
         State::M = M;
         State::N = N;
         State::BAN_X = noX;
         State::BAN_Y = noY;
-        auto top_copy = new char[N];
+        const auto node = new Node;
+        node->state.board = Board(board, M, N);
+        node->state.nextTurn = 2;
         for (int i = 0; i < N; i++) {
-            top_copy[i] = (char) top[i];
+            node->state.top[i] = (char) top[i];
         }
-        auto *state = new State(Board(board, M, N), top_copy, 2);
-        Node *node = new Node(*state);
         Node::root = node;
     } else {
         Node::root = Node::root->pick(lastY);
@@ -205,7 +206,8 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
     x = top[y] - 1;
 
     if (Node::root->children[y] == nullptr) {
-        Node::root->children[y] = new Node(*Node::root->state.step(y));
+        Node::root->children[y] = new Node;
+        Node::root->state.step(y, Node::root->children[y]->state);
     }
     Node::root = Node::root->pick(y);
 

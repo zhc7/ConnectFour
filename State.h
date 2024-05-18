@@ -20,27 +20,31 @@ struct BoardRow {
 };
 
 struct Board {
-    BoardRow *rows;
+    BoardRow rows[12];
 
-    BoardRow &operator[](int i) const {
+    Board() = default;
+
+    const BoardRow &operator[](int i) const {
         return rows[i];
     }
 
-    void set(int i, int j, char value) const {
-        rows[i].set(j, value);
-    }
-
-    Board(Board const &board) {
-        rows = new BoardRow[12];
+    void copyFrom(const Board &board) {
         for (int i = 0; i < 12; i++) {
             rows[i].row = board.rows[i].row;
         }
     }
 
+    void set(int i, int j, char value) {
+        rows[i].set(j, value);
+    }
+
+    Board(Board const &board) {
+        copyFrom(board);
+    }
+
     explicit Board(char **board, int M, int N) {
-        rows = new BoardRow[12];
-        for (int i = 0; i < 12; i++) {
-            rows[i].row = 0;
+        for (auto & row : rows) {
+            row.row = 0;
         }
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < N; j++) {
@@ -58,19 +62,19 @@ public:
     static int BAN_X;
     static int BAN_Y;
     Board board;
-    char *top;
-    char nextTurn;
+    char top[12]{};
+    char nextTurn = 0;
     char mustWin = 0;
 
-    State(const Board &board, char *top, char nextTurn);
+    State() = default;
 
-    State *step(int y) const;
+    void step(int y, State &target) const;
+
+    void copyFrom(const State &state);
 
     int simulate() const;
 
     short available() const;
-
-    ~State();
 
 protected:
     void _step(int y);
