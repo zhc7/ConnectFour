@@ -7,6 +7,8 @@
 #include "Node.h"
 
 Node *Node::root = nullptr;
+std::unordered_map<State *, Node *> Node::map;
+std::unordered_map<Node *, int> Node::rc;
 
 void Node::handleMustWin(char winner) {
     if (winner == 1) {
@@ -80,8 +82,16 @@ Node *Node::expand() {
         isLeaf = false;
     }
     const int target = indexes[random() % j];
-    const auto child = new Node;
+    auto child = new Node;
     state.step(target, child->state);
+    if (map.find(&child->state) != map.end()) {
+        delete child;
+        child = map[&child->state];
+        rc[child]++;
+    } else {
+        map[&child->state] = child;
+        rc[child] = 1;
+    }
     children[target] = child;
     if (child->state.mustWin == state.nextTurn) {
         state.mustWin = state.nextTurn;
@@ -99,16 +109,24 @@ Node *Node::pick(int y) {
     // clear other children
     for (int i = 0; i < State::N; i++) {
         if (i != y) {
-            delete children[i];
+            kill(children[i]);
             children[i] = nullptr;
         }
     }
     return children[y];
 }
 
+void Node::kill(Node *node) {
+    if (rc[node] == 1 || node == nullptr) {
+        delete node;
+    } else {
+        rc[node]--;
+    }
+}
+
 Node::~Node() {
     for (Node *child: children) {
-        delete child;
+        kill(child);
     }
 }
 

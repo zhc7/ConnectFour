@@ -6,7 +6,6 @@
 #include "Node.h"
 #include "State.h"
 
-using namespace std;
 
 const double TIME_LIMIT = 1.5;
 static int step = 0;
@@ -94,7 +93,7 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
     */
     //Add your own code below
 
-    auto start = chrono::system_clock::now();
+    auto start = std::chrono::system_clock::now();
 
     step++;
     if (Node::root == nullptr || lastY < 0 || Node::root->children[lastY] == nullptr) {
@@ -119,9 +118,9 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
     int actualSearches = 0;
     bool mustWin = false;
 #ifdef DEBUG
-    while (actualSearches < 10000) {
+    while (actualSearches < 100000) {
 #else
-    while (chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - start).count() < TIME_LIMIT * 1000) {
+    while (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start).count() < TIME_LIMIT * 1000) {
 #endif
         std::vector<Node *> path;
         Node *node = Node::root;
@@ -216,8 +215,8 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
     std::cout << "Best Value: " << bestValue << std::endl;
     log(Node::root);
 
-    auto now = chrono::system_clock::now();
-    std::cout << "Actual Time: " << chrono::duration_cast<chrono::milliseconds>(now - start).count() << "ms" << std::endl;
+    auto now = std::chrono::system_clock::now();
+    std::cout << "Actual Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() << "ms" << std::endl;
 #endif
 
     /*
