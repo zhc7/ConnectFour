@@ -21,7 +21,7 @@ public:
 
     explicit Node(const State& state);
 
-    double ucbValue(int parentVisit) const;
+    double ucbValue(double logParentVisit) const;
 
     void handleMustWin(int winner);
 

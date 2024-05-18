@@ -28,7 +28,7 @@ void Node::handleMustWin(int winner) {
     state.mustWin = winner;
 }
 
-double Node::ucbValue(int parentVisit) const {
+double Node::ucbValue(double logParentVisit) const {
 
     double win_rate = (double) playerWins / visits;
     if (state.nextTurn == 2) {
@@ -38,13 +38,14 @@ double Node::ucbValue(int parentVisit) const {
     if (visits == 0) {
         return (double) ((random() % 10) << 10);
     }
-    return win_rate + UCB_C * sqrt(2 * log(parentVisit) / visits);
+    return win_rate + UCB_C * sqrt(2 * logParentVisit / visits);
 }
 
 Node *Node::select() {
     Node *selected = nullptr;
     double bestValue = -1;
     int candidateMustWin = -1;
+    double logVisits = log(visits);
     for (Node *child: children) {
         if (child == nullptr) {
             continue;
@@ -57,7 +58,7 @@ Node *Node::select() {
         } else if (child->state.mustWin != 0) {
             continue;
         }
-        double uctValue = child->ucbValue(visits);
+        double uctValue = child->ucbValue(logVisits);
         if (uctValue > bestValue) {
             bestValue = uctValue;
             selected = child;

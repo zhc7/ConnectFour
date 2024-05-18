@@ -47,14 +47,21 @@ void State::_step(int y) {
     if (BAN_X == x - 1 && BAN_Y == y) {
         top[y]--;
     }
-    nextTurn = 3 - nextTurn;
-    if (userWin(x, y, M, N, board)) {
-        mustWin = 1;
-    } else if (machineWin(x, y, M, N, board)) {
-        mustWin = 2;
-    } else if (isTie(N, top)) {
+//    if (userWin(x, y, M, N, board)) {
+//        mustWin = 1;
+//    } else if (machineWin(x, y, M, N, board)) {
+//        mustWin = 2;
+//    } else if (isTie(N, top)) {
+//        mustWin = 3;
+//    }
+    if (isTie(N, top)) {
         mustWin = 3;
+    } else if (nextTurn == 1 && userWin(x, y, M, N, board)) {
+        mustWin = 1;
+    } else if (nextTurn == 2 && machineWin(x, y, M, N, board)) {
+        mustWin = 2;
     }
+    nextTurn = 3 - nextTurn;
 }
 
 bool *State::available() const {
