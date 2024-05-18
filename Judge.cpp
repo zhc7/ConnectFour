@@ -42,11 +42,11 @@ bool win(const int x, const int y, const int M, const int N, const Board &board)
     //左上-右下
     count = 0;
     for (i = x, j = y; i >= 0 && j >= 0; i--, j--)
-        if (board[i][j] != 2)
+        if (board[i][j] != p)
             break;
     count += (y - j);
     for (i = x, j = y; i < M && j < N; i++, j++)
-        if (board[i][j] != 2)
+        if (board[i][j] != p)
             break;
     count += (j - y - 1);
     if (count >= 4)
