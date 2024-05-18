@@ -14,7 +14,7 @@ Node::Node(const State &state) : state(state), playerWins(0), visits(0) {
     }
 }
 
-void Node::handleMustWin(int winner) {
+void Node::handleMustWin(char winner) {
     if (winner == 1) {
         playerWins = 0;
         visits = 1 << 20;
@@ -44,7 +44,7 @@ double Node::ucbValue(double logParentVisit) const {
 Node *Node::select() {
     Node *selected = nullptr;
     double bestValue = -1;
-    int candidateMustWin = -1;
+    char candidateMustWin = -1;
     double logVisits = log(visits);
     for (Node *child: children) {
         if (child == nullptr) {
@@ -72,11 +72,11 @@ Node *Node::select() {
 }
 
 Node *Node::expand() {
-    bool *avail = state.available();
+    short avail = state.available();
     bool all = true;
     Node* selected = nullptr;
     for (int i = 0; i < State::N; i++) {
-        if (!avail[i] || children[i] != nullptr) {
+        if (!(avail & (1 << i)) || children[i] != nullptr) {
             continue;
         }
         if (selected == nullptr) {

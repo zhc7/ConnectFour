@@ -12,18 +12,18 @@ public:
     static int N;
     static int BAN_X;
     static int BAN_Y;
-    int **board;
-    int *top;
-    int nextTurn;
-    int mustWin = 0;
+    char **board;
+    char *top;
+    char nextTurn;
+    char mustWin = 0;
 
-    State(int **board, int *top, int nextTurn);
+    State(char **board, char *top, char nextTurn);
 
     State *step(int y) const;
 
     int simulate() const;
 
-    bool *available() const;
+    short available() const;
 
     ~State();
 

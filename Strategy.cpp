@@ -21,7 +21,7 @@ void log(Node *node) {
             << Node::root->visits << " = "
             << (double) Node::root->playerWins / Node::root->visits
             << "\n"
-            << "mustWin: " << node->state.mustWin << "\n"
+            << "mustWin: " << (int) node->state.mustWin << "\n"
             << "children: \n";
     for (int i = 0; i < 12; i++) {
         std::cout
@@ -33,7 +33,7 @@ void log(Node *node) {
                 << node->children[i]->playerWins << " / "
                 << node->children[i]->visits << " = "
                 << (double) node->children[i]->playerWins / node->children[i]->visits
-                << "M" << node->children[i]->state.mustWin
+                << "M" << (int) node->children[i]->state.mustWin
                 << ";";
     }
     std::cout << std::endl;
@@ -80,11 +80,11 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
         不要更改这段代码
     */
     int x = -1, y = -1; //最终将你的落子点存到x,y中
-    int **board = new int *[M];
+    char **board = new char *[M];
     for (int i = 0; i < M; i++) {
-        board[i] = new int[N];
+        board[i] = new char[N];
         for (int j = 0; j < N; j++) {
-            board[i][j] = _board[i * N + j];
+            board[i][j] = (char) _board[i * N + j];
         }
     }
 
@@ -105,12 +105,12 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
         State::BAN_X = noX;
         State::BAN_Y = noY;
 //        int *board = new int[M * N];
-        int *top_copy = new int[N];
+        auto top_copy = new char[N];
 //        for (int i = 0; i < M * N; i++) {
 //            board[i] = _board[i];
 //        }
         for (int i = 0; i < N; i++) {
-            top_copy[i] = top[i];
+            top_copy[i] = (char) top[i];
         }
         auto *state = new State(board, top_copy, 2);
         Node *node = new Node(*state);

@@ -11,10 +11,10 @@ int State::N = -1;
 int State::BAN_X = -1;
 int State::BAN_Y = -1;
 
-int **copyBoard(int **board, int M, int N) {
-    int **newBoard = new int*[M];
+char **copyBoard(char **board, int M, int N) {
+    char **newBoard = new char*[M];
     for (int i = 0; i < M; i++) {
-        newBoard[i] = new int[N];
+        newBoard[i] = new char[N];
         for (int j = 0; j < N; j++) {
             newBoard[i][j] = board[i][j];
         }
@@ -22,15 +22,15 @@ int **copyBoard(int **board, int M, int N) {
     return newBoard;
 }
 
-State::State(int **board, int *top, int nextTurn) : board(board), top(top), nextTurn(nextTurn) {}
+State::State(char **board, char *top, char nextTurn) : board(board), top(top), nextTurn(nextTurn) {}
 
 State* State::step(int y) const {
 //    int *newBoard = new int[M * N];
-    int *newTop = new int[N];
+    auto newTop = new char[N];
 //    for (int i = 0; i < M * N; i++) {
 //        newBoard[i] = board[i];
 //    }
-    int **newBoard = copyBoard(board, M, N);
+    auto newBoard = copyBoard(board, M, N);
     for (int i = 0; i < N; i++) {
         newTop[i] = top[i];
     }
@@ -41,7 +41,7 @@ State* State::step(int y) const {
 
 void State::_step(int y) {
     top[y]--;
-    int x = top[y];
+    int x = (int) top[y];
 //    board[x * N + y] = nextTurn;
     board[x][y] = nextTurn;
     if (BAN_X == x - 1 && BAN_Y == y) {
@@ -64,10 +64,10 @@ void State::_step(int y) {
     nextTurn = 3 - nextTurn;
 }
 
-bool *State::available() const {
-    auto *avail = new bool[N];
+short State::available() const {
+    short avail = 0;
     for (int i = 0; i < N; i++) {
-        avail[i] = top[i] > 0;
+        avail |= (top[i] > 0) << i;
     }
     return avail;
 }
@@ -77,24 +77,23 @@ int State::simulate() const {
         return mustWin;
     }
 //    int *backupBoard = new int[M * N];
-    int *backupTop = new int[N];
+    char *backupTop = new char[N];
 //    for (int i = 0; i < M * N; i++) {
 //        backupBoard[i] = board[i];
 //    }
-    int **backupBoard = copyBoard(board, M, N);
+    auto backupBoard = copyBoard(board, M, N);
     for (int i = 0; i < N; i++) {
         backupTop[i] = top[i];
     }
     State newState(backupBoard, backupTop, nextTurn);
     while (true) {
-        bool *avail = newState.available();
+        short avail = newState.available();
         int y = (int) random() % N;
-        while (!avail[y]) {
+        while (!(avail & (1 << y))) {
             y = (y + 1) % N;
         }
         newState._step(y);
         if (newState.mustWin != 0) {
-            delete avail;
             return newState.mustWin;
         }
     }

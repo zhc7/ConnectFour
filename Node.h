@@ -23,8 +23,6 @@ public:
 
     double ucbValue(double logParentVisit) const;
 
-    void handleMustWin(int winner);
-
     Node *select();
 
     Node *expand();
@@ -34,6 +32,9 @@ public:
     Node *pick(int y);
 
     ~Node();
+
+protected:
+    void handleMustWin(char winner);
 };
 
 #endif //CONNECT4_NODE_H

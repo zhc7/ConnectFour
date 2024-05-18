@@ -1,6 +1,6 @@
 #include "Judge.h"
 
-bool userWin(const int x, const int y, const int M, const int N, int *const *board)
+bool userWin(const int x, const int y, const int M, const int N, char *const *board)
 {
     //横向检测
     int i, j;
@@ -54,7 +54,7 @@ bool userWin(const int x, const int y, const int M, const int N, int *const *boa
     return false;
 }
 
-bool machineWin(const int x, const int y, const int M, const int N, int *const *board)
+bool machineWin(const int x, const int y, const int M, const int N, char *const *board)
 {
     //横向检测
     int i, j;
@@ -108,7 +108,7 @@ bool machineWin(const int x, const int y, const int M, const int N, int *const *
     return false;
 }
 
-bool isTie(const int N, const int *top)
+bool isTie(const int N, const char *top)
 {
     bool tie = true;
     for (int i = 0; i < N; i++)

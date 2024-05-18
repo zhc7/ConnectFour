@@ -1,5 +1,5 @@
 /********************************************************
-*	Judge.h : 用于棋局评判的辅助函数                    *	
+*	Judge.h : 用于棋局评判的辅助函数                    *
 *	张永锋                                              *
 *	zhangyf07@gmail.com                                 *
 *	2014.5                                              *
@@ -39,12 +39,12 @@
 				2. 游戏以平局结束
 				对于以上这两种情况，我们可以用isTie函数进行进一步的判断
 */
-bool userWin(const int x, const int y, const int M, const int N, int *const *board);
+bool userWin(const int x, const int y, const int M, const int N, char *const *board);
 
 /*
 	与userWin函数同理，可以参见上述注释
 */
-bool machineWin(const int x, const int y, const int M, const int N, int *const *board);
+bool machineWin(const int x, const int y, const int M, const int N, char *const *board);
 
 /*
 	为了减少计算量，该函数通过直接检测棋盘是否已满来进行平局判断，而不是对棋盘进行全盘检测
@@ -60,6 +60,6 @@ bool machineWin(const int x, const int y, const int M, const int N, int *const *
 		true - 出现了平局
 		false - 未出现平局，此时游戏尚未结束
 */
-bool isTie(const int N, const int *top);
+bool isTie(const int N, const char *top);
 
 #endif
