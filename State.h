@@ -62,7 +62,7 @@ public:
     char nextTurn;
     char mustWin = 0;
 
-    State(Board board, char *top, char nextTurn);
+    State(const Board& board, char *top, char nextTurn);
 
     State *step(int y) const;
 

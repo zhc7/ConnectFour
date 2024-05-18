@@ -1,5 +1,4 @@
 #include <iostream>
-#include <unistd.h>
 #include <vector>
 #include "Point.h"
 #include "Strategy.h"
@@ -94,7 +93,7 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
     */
     //Add your own code below
 
-    time_t start = time(nullptr);
+    auto start = chrono::system_clock::now();
 
     step++;
     if (Node::root == nullptr || lastY < 0 || Node::root->children[lastY] == nullptr) {
@@ -147,7 +146,7 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
 #ifdef DEBUG
     while (actualSearches < 10000) {
 #else
-    while (difftime(time(nullptr), start) < TIME_LIMIT) {
+    while (chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - start).count() < TIME_LIMIT * 1000) {
 #endif
         std::vector<Node *> path;
         Node *node = Node::root;
@@ -235,11 +234,8 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
     std::cout << "Best Value: " << bestValue << std::endl;
     log(Node::root);
 
-    std::cout << "Actual Time: " << difftime(time(nullptr), start) << std::endl;
-
-    if (Node::root == nullptr) {
-        std::cout << "Nullptr root" << std::endl;
-    }
+    auto now = chrono::system_clock::now();
+    std::cout << "Actual Time: " << chrono::duration_cast<chrono::milliseconds>(now - start).count() << "ms" << std::endl;
 
     /*
         不要更改这段代码

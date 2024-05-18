@@ -11,7 +11,7 @@ int State::N = -1;
 int State::BAN_X = -1;
 int State::BAN_Y = -1;
 
-State::State(Board board, char *top, char nextTurn) : board(board), top(top), nextTurn(nextTurn) {}
+State::State(const Board& board, char *top, char nextTurn) : board(board), top(top), nextTurn(nextTurn) {}
 
 State* State::step(int y) const {
 //    int *newBoard = new int[M * N];
