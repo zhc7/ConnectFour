@@ -15,11 +15,11 @@ public:
 
     State state;
     Node *children[12]{};
-    int playerWins;
+    double playerWins;
     int visits;
     bool isLeaf = true;
 
-    explicit Node(const State& state);
+    explicit Node(const State &state);
 
     double ucbValue(double logParentVisit) const;
 

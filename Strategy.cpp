@@ -103,11 +103,7 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
         State::N = N;
         State::BAN_X = noX;
         State::BAN_Y = noY;
-//        int *board = new int[M * N];
         auto top_copy = new char[N];
-//        for (int i = 0; i < M * N; i++) {
-//            board[i] = _board[i];
-//        }
         for (int i = 0; i < N; i++) {
             top_copy[i] = (char) top[i];
         }
@@ -117,29 +113,6 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
     } else {
         Node::root = Node::root->pick(lastY);
     }
-
-//    log(Node::root->state.board);
-
-    // compare board same
-//    bool same = true;
-//    for (int i = 0; i < M; i++) {
-//        for (int j = 0; j < N; j++) {
-//            if (board[i][j] != Node::root->state.board[i][j]) {
-//                same = false;
-//                break;
-//            }
-//        }
-//        if (!same) {
-//            break;
-//        }
-//    }
-//    if (!same) {
-//        std::cout << "Board not same! given, expect" << std::endl;
-//        log(board);
-//        std::cout << "==========" << std::endl;
-//        log(Node::root->state.board);
-//        std::cout << "==========" << std::endl;
-//    }
 
     int actualSearches = 0;
     bool mustWin = false;
@@ -177,14 +150,16 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
         actualSearches++;
     }
 
+#ifdef LOG
     std::cout << "\n########----------#########" << std::endl;
     std::cout << "Round " << rounds << " Step " << step << std::endl;
     std::cout << "Actual searches: " << actualSearches << std::endl;
     log(Node::root);
+#endif
 
     double bestValue = -1;
     if (mustWin) {
-        int winner = Node::root->state.mustWin;
+        char winner = Node::root->state.mustWin;
         if (winner == 2) {
             for (int i = 0; i < N; i++) {
                 auto child = Node::root->children[i];
@@ -230,12 +205,15 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
         Node::root->children[y] = new Node(*Node::root->state.step(y));
     }
     Node::root = Node::root->pick(y);
+
+#ifdef LOG
     std::cout << "Selected: " << x << " " << y << std::endl;
     std::cout << "Best Value: " << bestValue << std::endl;
     log(Node::root);
 
     auto now = chrono::system_clock::now();
     std::cout << "Actual Time: " << chrono::duration_cast<chrono::milliseconds>(now - start).count() << "ms" << std::endl;
+#endif
 
     /*
         不要更改这段代码

@@ -30,7 +30,7 @@ void Node::handleMustWin(char winner) {
 
 double Node::ucbValue(double logParentVisit) const {
 
-    double win_rate = (double) playerWins / visits;
+    double win_rate = playerWins / visits;
     if (state.nextTurn == 2) {
         // parent's next turn is opponent's turn
         win_rate = 1 - win_rate;
@@ -74,7 +74,7 @@ Node *Node::select() {
 Node *Node::expand() {
     short avail = state.available();
     bool all = true;
-    Node* selected = nullptr;
+    Node *selected = nullptr;
     for (int i = 0; i < State::N; i++) {
         if (!(avail & (1 << i)) || children[i] != nullptr) {
             continue;
@@ -100,6 +100,7 @@ Node *Node::expand() {
 void Node::update(int winner) {
     visits++;
     playerWins += winner == 2;
+    playerWins += (winner == 3) * 0.5;
 }
 
 Node *Node::pick(int y) {
