@@ -112,7 +112,7 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
         for (int i = 0; i < N; i++) {
             top_copy[i] = (char) top[i];
         }
-        auto *state = new State(board, top_copy, 2);
+        auto *state = new State(Board(board, M, N), top_copy, 2);
         Node *node = new Node(*state);
         Node::root = node;
     } else {

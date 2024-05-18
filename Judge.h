@@ -26,6 +26,8 @@
 		5. 三个函数更具体的使用注意事项请见各自的注释
 */
 
+#include "State.h"
+
 /*
 	intput:
 		(x, y) - 用户的落子点 ( x - 所在行 y - 所在列 左上角为原点 组数下标从0开始计数 )
@@ -39,12 +41,12 @@
 				2. 游戏以平局结束
 				对于以上这两种情况，我们可以用isTie函数进行进一步的判断
 */
-bool userWin(const int x, const int y, const int M, const int N, char *const *board);
+bool userWin(const int x, const int y, const int M, const int N, const Board &board);
 
 /*
 	与userWin函数同理，可以参见上述注释
 */
-bool machineWin(const int x, const int y, const int M, const int N, char *const *board);
+bool machineWin(const int x, const int y, const int M, const int N, const Board &board);
 
 /*
 	为了减少计算量，该函数通过直接检测棋盘是否已满来进行平局判断，而不是对棋盘进行全盘检测

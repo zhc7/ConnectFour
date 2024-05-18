@@ -11,18 +11,7 @@ int State::N = -1;
 int State::BAN_X = -1;
 int State::BAN_Y = -1;
 
-char **copyBoard(char **board, int M, int N) {
-    char **newBoard = new char*[M];
-    for (int i = 0; i < M; i++) {
-        newBoard[i] = new char[N];
-        for (int j = 0; j < N; j++) {
-            newBoard[i][j] = board[i][j];
-        }
-    }
-    return newBoard;
-}
-
-State::State(char **board, char *top, char nextTurn) : board(board), top(top), nextTurn(nextTurn) {}
+State::State(Board board, char *top, char nextTurn) : board(board), top(top), nextTurn(nextTurn) {}
 
 State* State::step(int y) const {
 //    int *newBoard = new int[M * N];
@@ -30,7 +19,7 @@ State* State::step(int y) const {
 //    for (int i = 0; i < M * N; i++) {
 //        newBoard[i] = board[i];
 //    }
-    auto newBoard = copyBoard(board, M, N);
+    auto newBoard = Board(board);
     for (int i = 0; i < N; i++) {
         newTop[i] = top[i];
     }
@@ -43,7 +32,7 @@ void State::_step(int y) {
     top[y]--;
     int x = (int) top[y];
 //    board[x * N + y] = nextTurn;
-    board[x][y] = nextTurn;
+    board.set(x, y, nextTurn);
     if (BAN_X == x - 1 && BAN_Y == y) {
         top[y]--;
     }
@@ -81,7 +70,7 @@ int State::simulate() const {
 //    for (int i = 0; i < M * N; i++) {
 //        backupBoard[i] = board[i];
 //    }
-    auto backupBoard = copyBoard(board, M, N);
+    auto backupBoard = Board(board);
     for (int i = 0; i < N; i++) {
         backupTop[i] = top[i];
     }
@@ -100,10 +89,6 @@ int State::simulate() const {
 }
 
 State::~State() {
-    for (int i = 0; i < M; i++) {
-        delete[] board[i];
-    }
-    delete[] board;
     delete[] top;
 }
 
