@@ -188,6 +188,8 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
                 continue;
             }
             if (child->state.mustWin == 2) {
+                // seems impossible to reach
+                best_y = y;
                 break;
             }
             double value = (double) child->playerWins / child->visits;
