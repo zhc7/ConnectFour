@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <chrono>
 #include "Point.h"
 #include "Strategy.h"
 #include "Node.h"
