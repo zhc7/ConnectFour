@@ -68,28 +68,25 @@ Node *Node::select() {
 
 Node *Node::expand() {
     const short avail = state.available();
-    bool all = true;
-    Node *selected = nullptr;
+    int j = 0;
+    int indexes[12];
     for (int i = 0; i < State::N; i++) {
         if (!(avail & (1 << i)) || children[i] != nullptr) {
             continue;
         }
-        if (selected == nullptr) {
-            const auto child = new Node;
-            state.step(i, child->state);
-            children[i] = child;
-            if (child->state.mustWin == state.nextTurn) {
-                state.mustWin = state.nextTurn;
-            }
-            selected = child;
-        } else {
-            all = false;
-        }
+        indexes[j++] = i;
     }
-    if (all) {
+    if (j == 1) {
         isLeaf = false;
     }
-    return selected;
+    const int target = indexes[random() % j];
+    const auto child = new Node;
+    state.step(target, child->state);
+    children[target] = child;
+    if (child->state.mustWin == state.nextTurn) {
+        state.mustWin = state.nextTurn;
+    }
+    return child;
 }
 
 void Node::update(int winner) {
