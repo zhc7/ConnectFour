@@ -32,22 +32,21 @@ Node *Node::select() {
     char candidateMustWin = -1;
     const float sqrtLogVisit = UCB_C * sqrtf(2 * log(visits));
     for (Node *child: children) {
-        if (child == nullptr) {
-            continue;
-        }
-        // have win -> must win; all lose -> must lose; lose and tie -> must tie
-        candidateMustWin = std::max(candidateMustWin, child->state.mustWin);
-        if (child->state.mustWin == state.nextTurn) {
-            handleMustWin(state.nextTurn);
-            return this;
-        }
-        if (child->state.mustWin != 0) {
-            continue;
-        }
-        const double uctValue = child->ucbValue(sqrtLogVisit);
-        if (uctValue > bestValue) {
-            bestValue = uctValue;
-            selected = child;
+        if (child != nullptr) {
+            // have win -> must win; all lose -> must lose; lose and tie -> must tie
+            candidateMustWin = std::max(candidateMustWin, child->state.mustWin);
+            if (child->state.mustWin == state.nextTurn) {
+                handleMustWin(state.nextTurn);
+                return this;
+            }
+            if (child->state.mustWin != 0) {
+                continue;
+            }
+            const double uctValue = child->ucbValue(sqrtLogVisit);
+            if (uctValue > bestValue) {
+                bestValue = uctValue;
+                selected = child;
+            }
         }
     }
     if (selected == nullptr && candidateMustWin != -1) {
