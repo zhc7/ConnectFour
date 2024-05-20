@@ -18,6 +18,8 @@ public:
     double playerWins = 0;
     int visits = 0;
     bool isLeaf = true;
+    double winRate = 0;
+    double revSqrtVisit = 100;
 
     Node() = default;
 

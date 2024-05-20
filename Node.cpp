@@ -23,16 +23,7 @@ void Node::handleMustWin(char winner) {
 }
 
 double Node::ucbValue(const double sqrtLogParentVisit) const {
-    if (visits == 0) {
-        return (double) ((random() % 10) << 10);
-    }
-    double win_rate = playerWins / visits;
-    const double revSqrtVisit = 1 / sqrt(visits);
-    if (state.nextTurn == 2) {
-        // parent's next turn is opponent's turn
-        win_rate = 1 - win_rate;
-    }
-    return win_rate + sqrtLogParentVisit * revSqrtVisit;
+    return winRate + sqrtLogParentVisit * revSqrtVisit;
 }
 
 Node *Node::select() {
@@ -93,6 +84,12 @@ void Node::update(const int winner) {
     visits++;
     playerWins += winner == 2;
     playerWins += (winner == 3) * 0.5;
+    winRate = playerWins / visits;
+    revSqrtVisit = 1 / sqrt(visits);
+    if (state.nextTurn == 2) {
+        // parent's next turn is opponent's turn
+        winRate = 1 - winRate;
+    }
 }
 
 Node *Node::pick(int y) {

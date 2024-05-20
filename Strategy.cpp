@@ -145,7 +145,7 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
         }
         auto selected = node->expand();
         path.push_back(selected);
-        int result = selected->state.simulate();
+        const int result = selected->state.simulate();
         for (Node *n: path) {
             n->update(result);
         }
