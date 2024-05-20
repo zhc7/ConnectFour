@@ -22,7 +22,7 @@ void Node::handleMustWin(char winner) {
     state.mustWin = winner;
 }
 
-double Node::ucbValue(const double sqrtLogParentVisit) const {
+float Node::ucbValue(const float sqrtLogParentVisit) const {
     return winRate + sqrtLogParentVisit * revSqrtVisit;
 }
 
@@ -30,7 +30,7 @@ Node *Node::select() {
     Node *selected = nullptr;
     double bestValue = -1;
     char candidateMustWin = -1;
-    const double sqrtLogVisit = UCB_C * sqrt(2 * log(visits));
+    const float sqrtLogVisit = UCB_C * sqrtf(2 * log(visits));
     for (Node *child: children) {
         if (child == nullptr) {
             continue;

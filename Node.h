@@ -10,20 +10,20 @@
 
 class Node {
 public:
-    constexpr static double UCB_C = 0.7;
+    constexpr static float UCB_C = 0.7;
     static Node *root;
 
     State state;
     Node *children[12]{};
-    double playerWins = 0;
+    float playerWins = 0;
     int visits = 0;
     bool isLeaf = true;
-    double winRate = 0;
-    double revSqrtVisit = 100;
+    float winRate = 0;
+    float revSqrtVisit = 100;
 
     Node() = default;
 
-    double ucbValue(double sqrtLogParentVisit) const;
+    float ucbValue(float sqrtLogParentVisit) const;
 
     Node *select();
 
