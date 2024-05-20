@@ -57,7 +57,7 @@ Node *Node::select() {
 }
 
 Node *Node::expand() {
-    const short avail = state.available();
+    const short avail = state.avail;
     int j = 0;
     int indexes[12];
     for (int i = 0; i < State::N; i++) {

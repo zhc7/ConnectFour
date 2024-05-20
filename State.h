@@ -52,6 +52,7 @@ public:
     char top[12]{};
     char nextTurn = 0;
     char mustWin = 0;
+    short avail = 0xFFF;
 
     State() = default;
 
@@ -60,8 +61,6 @@ public:
     void copyFrom(const State &state);
 
     int simulate() const;
-
-    short available() const;
 
 protected:
     void _step(int y);

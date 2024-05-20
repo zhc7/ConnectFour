@@ -32,20 +32,13 @@ void State::_step(int y) {
     if (BAN_X == x - 1 && BAN_Y == y) {
         top[y]--;
     }
-    if (available() == 0) {
+    avail &= ~((top[y] <= 0) << y);
+    if (avail == 0) {
         mustWin = 3;
     } else {
         mustWin = win(x, y, M, N, board, nextTurn) ? nextTurn : (char) 0;
     }
     nextTurn = 3 - nextTurn;
-}
-
-short State::available() const {
-    short avail = 0;
-    for (int i = 0; i < N; i++) {
-        avail |= (top[i] > 0) << i;
-    }
-    return avail;
 }
 
 int State::simulate() const {
@@ -55,7 +48,7 @@ int State::simulate() const {
     State newState;
     newState.copyFrom(*this);
     while (true) {
-        short avail = newState.available();
+        const short avail = newState.avail;
         int y = (int) random() % N;
         while (!(avail & (1 << y))) {
             y = (y + 1) % N;
