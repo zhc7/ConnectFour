@@ -8,7 +8,13 @@
 
 using namespace std;
 
-const double TIME_LIMIT = 1.5;
+#ifdef QUICKER
+constexpr double TIME_LIMIT = 1.5;
+#elif defined(SLOWER)
+constexpr double TIME_LIMIT = 2.5;
+#else
+constexpr double TIME_LIMIT = 2;
+#endif
 static int step = 0;
 static int rounds = 0;
 
