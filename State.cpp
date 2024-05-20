@@ -35,7 +35,7 @@ void State::_step(int y) {
     if (available() == 0) {
         mustWin = 3;
     } else {
-        mustWin = win(x, y, M, N, board) ? nextTurn : (char) 0;
+        mustWin = win(x, y, M, N, board, nextTurn) ? nextTurn : (char) 0;
     }
     nextTurn = 3 - nextTurn;
 }

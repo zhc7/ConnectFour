@@ -48,7 +48,7 @@
 */
 //bool machineWin(const int x, const int y, const int M, const int N, const Board &board);
 
-bool win(const int x, const int y, const int M, const int N, const Board &board);
+bool win(int x, int y, int M, int N, const Board &board, char p);
 
 /*
 	为了减少计算量，该函数通过直接检测棋盘是否已满来进行平局判断，而不是对棋盘进行全盘检测
@@ -64,6 +64,6 @@ bool win(const int x, const int y, const int M, const int N, const Board &board)
 		true - 出现了平局
 		false - 未出现平局，此时游戏尚未结束
 */
-bool isTie(const int N, const char *top);
+bool isTie(int N, const char *top);
 
 #endif

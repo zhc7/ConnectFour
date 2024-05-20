@@ -6,36 +6,22 @@
 #define CONNECT4_STATE_H
 
 
-struct BoardRow {
-    int row = 0;
-
-    char operator[](int i) const {
-        return (row >> (i << 1)) & 3;
-    }
-
-    void set(int i, char value) {
-        row &= ~(3 << (i << 1));
-        row |= value << (i << 1);
-    }
-};
-
 struct Board {
-    BoardRow rows[12];
+    int rows[12];
+    int cols[12];
 
     Board() = default;
 
-    const BoardRow &operator[](int i) const {
-        return rows[i];
-    }
-
     void copyFrom(const Board &board) {
         for (int i = 0; i < 12; i++) {
-            rows[i].row = board.rows[i].row;
+            rows[i] = board.rows[i];
+            cols[i] = board.cols[i];
         }
     }
 
     void set(int i, int j, char value) {
-        rows[i].set(j, value);
+        rows[i] |= ((value == 1) << j) | ((value == 2) << (j + 16));
+        cols[j] |= ((value == 1) << i) | ((value == 2) << (i + 16));
     }
 
     Board(Board const &board) {
@@ -43,8 +29,9 @@ struct Board {
     }
 
     explicit Board(char **board, int M, int N) {
-        for (auto & row : rows) {
-            row.row = 0;
+        for (int i = 0; i < 12; i++) {
+            rows[i] = 0;
+            cols[i] = 0;
         }
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < N; j++) {
