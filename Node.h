@@ -21,13 +21,13 @@ public:
 
     Node() = default;
 
-    double ucbValue(double logParentVisit) const;
+    double ucbValue(double sqrtLogParentVisit) const;
 
     Node *select();
 
     Node *expand();
 
-    void update(int isPlayerWin);
+    void update(int winner);
 
     Node *pick(int y);
 

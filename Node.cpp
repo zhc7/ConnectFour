@@ -22,24 +22,24 @@ void Node::handleMustWin(char winner) {
     state.mustWin = winner;
 }
 
-double Node::ucbValue(double logParentVisit) const {
-
+double Node::ucbValue(const double sqrtLogParentVisit) const {
+    if (visits == 0) {
+        return (double) ((random() % 10) << 10);
+    }
     double win_rate = playerWins / visits;
+    const double revSqrtVisit = 1 / sqrt(visits);
     if (state.nextTurn == 2) {
         // parent's next turn is opponent's turn
         win_rate = 1 - win_rate;
     }
-    if (visits == 0) {
-        return (double) ((random() % 10) << 10);
-    }
-    return win_rate + UCB_C * sqrt(2 * logParentVisit / visits);
+    return win_rate + sqrtLogParentVisit * revSqrtVisit;
 }
 
 Node *Node::select() {
     Node *selected = nullptr;
     double bestValue = -1;
     char candidateMustWin = -1;
-    const double logVisits = log(visits);
+    const double sqrtLogVisit = UCB_C * sqrt(2 * log(visits));
     for (Node *child: children) {
         if (child == nullptr) {
             continue;
@@ -53,7 +53,7 @@ Node *Node::select() {
         if (child->state.mustWin != 0) {
             continue;
         }
-        double uctValue = child->ucbValue(logVisits);
+        const double uctValue = child->ucbValue(sqrtLogVisit);
         if (uctValue > bestValue) {
             bestValue = uctValue;
             selected = child;
@@ -89,7 +89,7 @@ Node *Node::expand() {
     return child;
 }
 
-void Node::update(int winner) {
+void Node::update(const int winner) {
     visits++;
     playerWins += winner == 2;
     playerWins += (winner == 3) * 0.5;
