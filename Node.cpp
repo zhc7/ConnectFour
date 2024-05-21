@@ -9,16 +9,6 @@
 Node *Node::root = nullptr;
 
 void Node::handleMustWin(char winner) {
-    if (winner == 1) {
-        playerWins = 0;
-        visits = 1 << 20;
-    } else if (winner == 2) {
-        playerWins = 1 << 20;
-        visits = 1 << 20;
-    } else if (winner == 3) {
-        playerWins = 1 << 19;
-        visits = 1 << 20;
-    }
     state.mustWin = winner;
 }
 
@@ -84,7 +74,7 @@ void Node::update(const int winner) {
     playerWins += winner == 2;
     playerWins += (winner == 3) * 0.5;
     winRate = playerWins / visits;
-    revSqrtVisit = 1 / sqrt(visits);
+    revSqrtVisit = 1 / sqrtf(visits);
     if (state.nextTurn == 2) {
         // parent's next turn is opponent's turn
         winRate = 1 - winRate;

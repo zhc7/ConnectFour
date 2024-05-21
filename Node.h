@@ -10,7 +10,7 @@
 
 class Node {
 public:
-    constexpr static float UCB_C = 0.7;
+    constexpr static float UCB_C = 1.0;
     static Node *root;
 
     State state;
