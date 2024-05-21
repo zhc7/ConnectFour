@@ -11,6 +11,10 @@ int State::N = -1;
 int State::BAN_X = -1;
 int State::BAN_Y = -1;
 
+State::State() {
+    avail = (1 << N) - 1;
+}
+
 void State::step(int y, State &target) const {
     target.copyFrom(*this);
     target._step(y);
@@ -22,6 +26,8 @@ void State::copyFrom(const State &state) {
     }
     board.copyFrom(state.board);
     nextTurn = state.nextTurn;
+    mustWin = state.mustWin;
+    avail = state.avail;
 }
 
 

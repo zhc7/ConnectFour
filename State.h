@@ -48,13 +48,13 @@ public:
     static int N;
     static int BAN_X;
     static int BAN_Y;
-    Board board;
+    Board board{};
     char top[12]{};
     char nextTurn = 0;
     char mustWin = 0;
-    short avail = 0xFFF;
+    short avail = 0;
 
-    State() = default;
+    State();
 
     void step(int y, State &target) const;
 
