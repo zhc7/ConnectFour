@@ -5,6 +5,8 @@
 #ifndef CONNECT4_STATE_H
 #define CONNECT4_STATE_H
 
+#include <cstring>
+
 
 struct Board {
     int rows[12];
@@ -15,10 +17,11 @@ struct Board {
     Board() = default;
 
     void copyFrom(const Board &board) {
-        for (int i = 0; i < 12; i++) {
-            rows[i] = board.rows[i];
-            cols[i] = board.cols[i];
-        }
+        // use memcpy
+        std::memcpy(rows, board.rows, sizeof(rows));
+        std::memcpy(cols, board.cols, sizeof(cols));
+        std::memcpy(slanted_left, board.slanted_left, sizeof(slanted_left));
+        std::memcpy(slanted_right, board.slanted_right, sizeof(slanted_right));
     }
 
     void set(int i, int j, char value) {
@@ -36,6 +39,10 @@ struct Board {
         for (int i = 0; i < 12; i++) {
             rows[i] = 0;
             cols[i] = 0;
+        }
+        for (int i = 0; i < 23; i++) {
+            slanted_left[i] = 0;
+            slanted_right[i] = 0;
         }
         for (int i = 0; i < M; i++) {
             for (int j = 0; j < N; j++) {
