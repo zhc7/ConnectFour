@@ -24,6 +24,11 @@ struct Board {
         cols[j] |= ((value == 1) << i) | ((value == 2) << (i + 16));
     }
 
+    void unset(int i, int j) {
+        rows[i] &= ~((1 << j) | (1 << (j + 16)));
+        cols[j] &= ~((1 << i) | (1 << (i + 16)));
+    }
+
     Board(Board const &board) {
         copyFrom(board);
     }
