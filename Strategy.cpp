@@ -20,8 +20,8 @@ static int rounds = 0;
 
 
 void log(Node *node) {
-    std::cout
-            << "nextTurn: " << node->state.nextTurn << "\n"
+    std::cerr
+            << "nextTurn: " << (int) node->state.nextTurn << "\n"
             << "wins: "
             << Node::root->playerWins << " / "
             << Node::root->visits << " = "
@@ -30,31 +30,31 @@ void log(Node *node) {
             << "mustWin: " << (int) node->state.mustWin << "\n"
             << "children: \n";
     for (int i = 0; i < 12; i++) {
-        std::cout
+        std::cerr
                 << "  " << i << ": ";
         if (node->children[i] == nullptr) {
             continue;
         }
-        std::cout
+        std::cerr
                 << node->children[i]->playerWins << " / "
                 << node->children[i]->visits << " = "
                 << (double) node->children[i]->playerWins / node->children[i]->visits
                 << "M" << (int) node->children[i]->state.mustWin
                 << ";";
     }
-    std::cout << std::endl;
+    std::cerr << std::endl;
 }
 
 void log(int **board) {
     for (int i = 0; i < State::M; i++) {
         for (int j = 0; j < State::N; j++) {
             if (State::BAN_X == i && State::BAN_Y == j)
-                std::cout << 'X';
+                std::cerr << 'X';
             else
-                std::cout << board[i][j];
-            std::cout << " ";
+                std::cerr << board[i][j];
+            std::cerr << " ";
         }
-        std::cout << std::endl;
+        std::cerr << std::endl;
     }
 }
 
@@ -158,12 +158,13 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
         actualSearches++;
     }
 
-#ifdef LOG
-    std::cout << "\n########----------#########" << std::endl;
-    std::cout << "Round " << rounds << " Step " << step << std::endl;
-    std::cout << "Actual searches: " << actualSearches << std::endl;
+// #ifdef LOG
+    std::cerr << "Enemy Select: " << lastX << " " << lastY << std::endl;
+    std::cerr << "\n########----------#########" << std::endl;
+    std::cerr << "Round " << rounds << " Step " << step << std::endl;
+    std::cerr << "Actual searches: " << actualSearches << std::endl;
     log(Node::root);
-#endif
+// #endif
 
     double bestValue = -1;
     if (mustWin) {
@@ -217,14 +218,14 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
     }
     Node::root = Node::root->pick(y);
 
-#ifdef LOG
-    std::cout << "Selected: " << x << " " << y << std::endl;
-    std::cout << "Best Value: " << bestValue << std::endl;
+// #ifdef LOG
+    std::cerr << "Selected: " << x << " " << y << std::endl;
+    std::cerr << "Best Value: " << bestValue << std::endl;
     log(Node::root);
 
     auto now = chrono::system_clock::now();
-    std::cout << "Actual Time: " << chrono::duration_cast<chrono::milliseconds>(now - start).count() << "ms" << std::endl;
-#endif
+    std::cerr << "Actual Time: " << chrono::duration_cast<chrono::milliseconds>(now - start).count() << "ms" << std::endl;
+// #endif
 
     /*
         不要更改这段代码
