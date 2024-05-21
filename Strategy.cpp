@@ -96,10 +96,6 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
         }
     }
 
-    std::cout << sizeof(Node) << std::endl;
-    std::cout << sizeof(State) << std::endl;
-    std::cout << sizeof(Board) << std::endl;
-
     /*
         根据你自己的策略来返回落子点,也就是根据你的策略完成对x,y的赋值
         该部分对参数使用没有限制，为了方便实现，你可以定义自己新的类、.h文件、.cpp文件

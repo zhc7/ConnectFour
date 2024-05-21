@@ -10,6 +10,8 @@ int State::M = -1;
 int State::N = -1;
 int State::BAN_X = -1;
 int State::BAN_Y = -1;
+char State::randomTable[30];
+int State::randomIndex = 0;
 
 State::State() {
     avail = (1 << N) - 1;
