@@ -1,5 +1,5 @@
 objects = ../so/Strategy.so ../so/Strategy.so.d
-targets = Judge.cpp Strategy.cpp State.cpp Node.cpp
+targets = Judge.cpp Strategy.cpp State.cpp Node.cpp mem.cpp
 
 all: so
 

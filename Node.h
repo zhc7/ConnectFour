@@ -33,7 +33,7 @@ public:
 
     Node *pick(int y);
 
-    ~Node();
+    ~Node() = default;
 
 protected:
     void handleMustWin(char winner);

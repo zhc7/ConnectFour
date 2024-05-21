@@ -5,6 +5,7 @@
 #include <cmath>
 #include<algorithm>
 #include "Node.h"
+#include "mem.h"
 
 Node *Node::root = nullptr;
 
@@ -60,7 +61,7 @@ Node *Node::expand() {
         isLeaf = false;
     }
     const int target = indexes[random() % j];
-    const auto child = new Node;
+    const auto child = getNode();
     state.step(target, child->state);
     children[target] = child;
     if (child->state.mustWin == state.nextTurn) {
@@ -85,17 +86,9 @@ Node *Node::pick(int y) {
     // clear other children
     for (int i = 0; i < State::N; i++) {
         if (i != y) {
-            delete children[i];
+            freeNode(children[i]);
             children[i] = nullptr;
         }
     }
     return children[y];
 }
-
-Node::~Node() {
-    for (Node *child: children) {
-        delete child;
-    }
-}
-
-

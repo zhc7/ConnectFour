@@ -3,6 +3,8 @@
 #include <chrono>
 #include "Point.h"
 #include "Strategy.h"
+
+#include "mem.h"
 #include "Node.h"
 #include "State.h"
 
@@ -104,14 +106,14 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
 
     step++;
     if (Node::root == nullptr || lastY < 0 || Node::root->children[lastY] == nullptr) {
-        delete Node::root;
+        freeNode(Node::root);
         step = 1;
         rounds++;
         State::M = M;
         State::N = N;
         State::BAN_X = noX;
         State::BAN_Y = noY;
-        const auto node = new Node;
+        const auto node = getNode();
         node->state.board = Board(board, M, N);
         node->state.nextTurn = 2;
         for (int i = 0; i < N; i++) {
@@ -213,7 +215,7 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
     x = top[y] - 1;
 
     if (Node::root->children[y] == nullptr) {
-        Node::root->children[y] = new Node;
+        Node::root->children[y] = getNode();
         Node::root->state.step(y, Node::root->children[y]->state);
     }
     Node::root = Node::root->pick(y);
