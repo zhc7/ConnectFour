@@ -28,7 +28,7 @@ float Node::ucbValue(const float sqrtLogParentVisit) const {
 
 Node *Node::select() {
     Node *selected = nullptr;
-    double bestValue = -1;
+    float bestValue = -1;
     char candidateMustWin = -1;
     const float sqrtLogVisit = UCB_C * sqrtf(2 * log(visits));
     for (Node *child: children) {
@@ -42,7 +42,7 @@ Node *Node::select() {
             if (child->state.mustWin != 0) {
                 continue;
             }
-            const double uctValue = child->ucbValue(sqrtLogVisit);
+            const float uctValue = child->ucbValue(sqrtLogVisit);
             if (uctValue > bestValue) {
                 bestValue = uctValue;
                 selected = child;
