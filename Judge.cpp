@@ -1,13 +1,13 @@
 #include "Judge.h"
 
 
-static bool rowWin(const short row, const int y) {
+static bool rowWin(const short row) {
     const short row1 = row & (row << 1);
     const short row2 = row1 & (row1 << 2);
-    return (row2 >> y) & 0b1111;
+    return row2;
 }
 
-static bool get(const Board& board, const int x, const int y, const char p) {
+static bool get(const Board &board, const int x, const int y, const char p) {
     return (board.rows[x] >> ((p - 1) * 16)) & (1 << y);
 }
 
@@ -17,7 +17,7 @@ bool win(const int x, const int y, const int M, const int N, const Board &board,
     int i, j;
 
     const short row = board.rows[x] >> ((p - 1) * 16);
-    if (rowWin(row, y)) {
+    if (rowWin(row)) {
         return true;
     }
     /*
@@ -29,7 +29,7 @@ bool win(const int x, const int y, const int M, const int N, const Board &board,
 
     //纵向检测
     const short col = board.cols[y] >> ((p - 1) * 16);
-    if (rowWin(col, x)) {
+    if (rowWin(col)) {
         return true;
     }
 
@@ -60,6 +60,13 @@ bool win(const int x, const int y, const int M, const int N, const Board &board,
         return true;
 
     return false;
+}
+
+bool win(const int x, const int y, const BoardSlanted &board, const char p) {
+    return rowWin(board.rows[x] >> ((p - 1) * 16)) ||
+           rowWin(board.cols[y] >> ((p - 1) * 16)) ||
+           rowWin(board.slanted_left[x + y] >> ((p - 1) * 16)) ||
+           rowWin(board.slanted_right[x - y + 11] >> ((p - 1) * 16));
 }
 
 bool isTie(const int N, const char *top) {

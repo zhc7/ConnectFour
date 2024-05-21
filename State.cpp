@@ -53,36 +53,47 @@ int State::simulate() const {
     if (mustWin != 0) {
         return mustWin;
     }
-    State newState;
-    newState.copyFrom(*this);
+    BoardSlanted b(board);
+    char turn = nextTurn;
+    short avail = this->avail;
+    char top[12];
+    std::memcpy(top, this->top, sizeof(top));
     while (true) {
-        const short avail = newState.avail;
-        char y;
+        int y;
         bool selected = false;
         for (y = 0; y < N; y++) {
             if (avail & (1 << y)) {
-                const char x = newState.top[y] - 1;
-                newState.board.set(x, y, newState.nextTurn);
-                if (win(x, y, M, N, newState.board, newState.nextTurn)) return newState.nextTurn;
-                newState.board.unset(x, y);
-                newState.board.set(x, y, 3 - newState.nextTurn);
-                const bool enemyWin = win(x, y, M, N, newState.board, 3 - newState.nextTurn);
-                newState.board.unset(x, y);
+                const char x = top[y] - 1;
+                b.set(x, y, turn);
+                if (win(x, y, b, turn)) return turn;
+                b.unset(x, y);
+                b.set(x, y, 3 - turn);
+                const bool enemyWin = win(x, y, b, 3 - turn);
+                b.unset(x, y);
                 if (enemyWin) {
                     selected = true;
                     break;
                 }
             }
         }
+        // rollout
         if (!selected) {
             y = randomTable[random() % randomIndex];
             while (!(avail & (1 << y))) {
                 y = randomTable[random() % randomIndex];
             }
         }
-        newState._step(y);
-        if (newState.mustWin != 0) {
-            return newState.mustWin;
+        // step
+        top[y]--;
+        const char x = top[y];
+        b.set(x, y, turn);
+        if (BAN_X == x - 1 && BAN_Y == y) {
+            top[y]--;
         }
+        avail &= ~((top[y] <= 0) << y);
+        if (avail == 0) {
+            return 3;
+        }
+        turn = 3 - turn;
     }
 }

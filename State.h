@@ -5,6 +5,7 @@
 #ifndef CONNECT4_STATE_H
 #define CONNECT4_STATE_H
 
+#include <cstring>
 
 struct Board {
     int rows[12];
@@ -13,10 +14,8 @@ struct Board {
     Board() = default;
 
     void copyFrom(const Board &board) {
-        for (int i = 0; i < 12; i++) {
-            rows[i] = board.rows[i];
-            cols[i] = board.cols[i];
-        }
+        std::memcpy(rows, board.rows, sizeof(rows));
+        std::memcpy(cols, board.cols, sizeof(cols));
     }
 
     void set(int i, int j, char value) {
@@ -43,6 +42,41 @@ struct Board {
                 set(i, j, board[i][j]);
             }
         }
+    }
+};
+
+struct BoardSlanted : Board {
+    int slanted_left[23];
+    int slanted_right[23];
+
+    BoardSlanted() = default;
+
+    void copyFrom(const Board &board) {
+        Board::copyFrom(board);
+        std::memset(slanted_left, 0, sizeof(slanted_left));
+        std::memset(slanted_right, 0, sizeof(slanted_right));
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 12; j++) {
+                slanted_left[i + j] |= ((board.rows[i] >> j) & 1) | ((board.rows[i] >> (j + 16)) & 1) << 16;
+                slanted_right[i - j + 11] |= ((board.rows[i] >> j) & 1) | ((board.rows[i] >> (j + 16)) & 1) << 16;
+            }
+        }
+    }
+
+    void set(int i, int j, char value) {
+        Board::set(i, j, value);
+        slanted_left[i + j] |= ((value == 1) << j) | ((value == 2) << (j + 16));
+        slanted_right[i - j + 11] |= ((value == 1) << j) | ((value == 2) << (j + 16));
+    }
+
+    void unset(int i, int j) {
+        Board::unset(i, j);
+        slanted_left[i + j] &= ~((1 << j) | (1 << (j + 16)));
+        slanted_right[i - j + 11] &= ~((1 << j) | (1 << (j + 16)));
+    }
+
+    explicit BoardSlanted(Board const &board) {
+        copyFrom(board);
     }
 };
 
