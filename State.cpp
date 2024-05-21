@@ -57,9 +57,23 @@ int State::simulate() const {
     newState.copyFrom(*this);
     while (true) {
         const short avail = newState.avail;
-        char y = randomTable[random() % State::randomIndex];
-        while (!(avail & (1 << y))) {
-            y = (y + 1) % N;
+        char y;
+        bool selected = false;
+        for (y = 0; y < N; y++) {
+            if (avail & (1 << y)) {
+                const char x = newState.top[y] - 1;
+                if (win(x, y, M, N, board, newState.nextTurn)) return newState.nextTurn;
+                if (win(x, y, M, N, board, 3 - newState.nextTurn)) {
+                    selected = true;
+                    break;
+                }
+            }
+        }
+        if (!selected) {
+            y = randomTable[random() % randomIndex];
+            while (!(avail & (1 << y))) {
+                y = randomTable[random() % randomIndex];
+            }
         }
         newState._step(y);
         if (newState.mustWin != 0) {
