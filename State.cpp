@@ -49,6 +49,24 @@ void State::_step(int y) {
     nextTurn = 3 - nextTurn;
 }
 
+int hot(const int row) {
+    return row & (row << 1) & (row << 2);
+}
+
+int jump(const int row) {
+    /*
+     *1011000
+     *0001011
+     *0010110
+     *0101100
+     *1011000
+     */
+    const int match = row & (row << 3);
+    const int A = match & (row << 2);
+    const int B = match & (row << 1);
+    return (A >> 1) | (B >> 2);
+}
+
 int State::simulate() const {
     if (mustWin != 0) {
         return mustWin;
@@ -56,24 +74,66 @@ int State::simulate() const {
     BoardSlanted b(board);
     char turn = nextTurn;
     short avail = this->avail;
-    char top[12];
+    char top[16];
     std::memcpy(top, this->top, sizeof(top));
+    top[12] = -1;
+    top[15] = -1;
+    int charge_r[12]{};
+    int charge_c[12]{};
+    int jump_r[12]{};
+    int jump_c[12]{};
+    int charge_sl[23]{};
+    int jump_sl[23]{};
+    int charge_sr[23]{};
+    int jump_sr[23]{};
+    for (int i = 0; i < N; i++) {
+        charge_r[i] = hot(b.rows[i]);
+        charge_c[i] = hot(b.cols[i]);
+        jump_r[i] = jump(b.rows[i]);
+        jump_c[i] = jump(b.cols[i]);
+    }
+    for (int i = 3; i < N + M - 4; i++) {
+        charge_sl[i] = hot(b.slanted_left[i]);
+        charge_sr[i] = hot(b.slanted_right[i]);
+        jump_sl[i] = jump(b.slanted_left[i]);
+        jump_sr[i] = jump(b.slanted_right[i]);
+    }
     while (true) {
         int y;
         bool selected = false;
+        // check must win places
         for (y = 0; y < N; y++) {
-            if (avail & (1 << y)) {
-                const char x = top[y] - 1;
+            int x = top[y] - 1;
+            if (x < 0) continue;
+            if (
+                charge_r[x] & (0b10001 << (y + (turn - 1) * 16) >> 1)
+                || charge_c[y] & (0b10001 << (x + (turn - 1) * 16) >> 1)
+                || charge_sl[x + y] & (0b10001 << (y + (turn - 1) * 16) >> 1)
+                || charge_sr[x - y + 11] & (0b10001 << (y + (turn - 1) * 16) >> 1)
+                || jump_r[x] & (1 << (y + (turn - 1) * 16))
+                || jump_c[y] & (1 << (x + (turn - 1) * 16))
+                || jump_sl[x + y] & (1 << (y + (turn - 1) * 16))
+                || jump_sr[x - y + 11] & (1 << (y + (turn - 1) * 16))
+            ) {
                 b.set(x, y, turn);
-                if (win(x, y, b, turn)) return turn;
+                // assert(win(x, y, b, turn));
+                return turn;
+            }
+            if (
+                charge_r[x] & (0b10001 << (y + (3 - turn) * 16)) >> 1
+                || charge_c[y] & (0b10001 << (x + (3 - turn) * 16)) >> 1
+                || charge_sl[x + y] & (0b10001 << (y + (3 - turn) * 16)) >> 1
+                || charge_sr[x - y + 11] & (0b10001 << (y + (3 - turn) * 16)) >> 1
+                || jump_r[x] & (1 << (y + (3 - turn) * 16))
+                || jump_c[y] & (1 << (x + (3 - turn) * 16))
+                || jump_sl[x + y] & (1 << (y + (3 - turn) * 16))
+                || jump_sr[x - y + 11] & (1 << (y + (3 - turn) * 16))
+            ) {
+                b.set(x, y, turn);
+                // assert(win(x, y, b, 3 - turn));
                 b.unset(x, y);
-                b.set(x, y, 3 - turn);
-                const bool enemyWin = win(x, y, b, 3 - turn);
-                b.unset(x, y);
-                if (enemyWin) {
-                    selected = true;
-                    break;
-                }
+                selected = true;
+                break;
             }
         }
         // rollout
@@ -94,6 +154,16 @@ int State::simulate() const {
         if (avail == 0) {
             return 3;
         }
+        // assert(!win(x, y, b, turn));
+        // update charge and jump
+        charge_r[x] = hot(b.rows[x]);
+        charge_c[y] = hot(b.cols[y]);
+        charge_sl[x + y] = hot(b.slanted_left[x + y]);
+        charge_sr[x - y + 11] = hot(b.slanted_right[x - y + 11]);
+        jump_r[x] = jump(b.rows[x]);
+        jump_c[y] = jump(b.cols[y]);
+        jump_sl[x + y] = jump(b.slanted_left[x + y]);
+        jump_sr[x - y + 11] = jump(b.slanted_right[x - y + 11]);
         turn = 3 - turn;
     }
 }
