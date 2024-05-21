@@ -48,6 +48,8 @@ public:
     static int N;
     static int BAN_X;
     static int BAN_Y;
+    static char randomTable[30];
+    static int randomIndex;
     Board board{};
     char top[12]{};
     char nextTurn = 0;

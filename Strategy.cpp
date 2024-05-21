@@ -96,6 +96,10 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
         }
     }
 
+    std::cout << sizeof(Node) << std::endl;
+    std::cout << sizeof(State) << std::endl;
+    std::cout << sizeof(Board) << std::endl;
+
     /*
         根据你自己的策略来返回落子点,也就是根据你的策略完成对x,y的赋值
         该部分对参数使用没有限制，为了方便实现，你可以定义自己新的类、.h文件、.cpp文件
@@ -109,10 +113,21 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
         freeNode(Node::root);
         step = 1;
         rounds++;
+
+        // init State
         State::M = M;
         State::N = N;
         State::BAN_X = noX;
         State::BAN_Y = noY;
+        State::randomIndex = 0;
+        for (int i = 0; i < State::N; i++) {
+            const int weight = round(std::min(i, State::N - i - 1) / 3.) + 1;
+            for (int j = 0; j < weight; j++) {
+                State::randomTable[State::randomIndex++] = i;
+            }
+        }
+
+        // init root node
         const auto node = getNode();
         node->state.board = Board(board, M, N);
         node->state.nextTurn = 2;

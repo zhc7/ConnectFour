@@ -55,7 +55,7 @@ int State::simulate() const {
     newState.copyFrom(*this);
     while (true) {
         const short avail = newState.avail;
-        int y = (int) random() % N;
+        char y = randomTable[random() % State::randomIndex];
         while (!(avail & (1 << y))) {
             y = (y + 1) % N;
         }
