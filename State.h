@@ -9,6 +9,8 @@
 struct Board {
     int rows[12];
     int cols[12];
+    int slanted_left[23];
+    int slanted_right[23];
 
     Board() = default;
 
@@ -22,6 +24,8 @@ struct Board {
     void set(int i, int j, char value) {
         rows[i] |= ((value == 1) << j) | ((value == 2) << (j + 16));
         cols[j] |= ((value == 1) << i) | ((value == 2) << (i + 16));
+        slanted_left[i + j] |= ((value == 1) << j) | ((value == 2) << (j + 16));
+        slanted_right[i - j + 11] |= ((value == 1) << j) | ((value == 2) << (j + 16));
     }
 
     Board(Board const &board) {

@@ -1,23 +1,17 @@
 #include "Judge.h"
 
 
-static bool rowWin(const short row, const int y) {
+static bool rowWin(const short row) {
     const short row1 = row & (row << 1);
     const short row2 = row1 & (row1 << 2);
-    return (row2 >> y) & 0b1111;
+    return row2;
 }
-
-static bool get(const Board& board, const int x, const int y, const char p) {
-    return (board.rows[x] >> ((p - 1) * 16)) & (1 << y);
-}
-
 
 bool win(const int x, const int y, const int M, const int N, const Board &board, const char p) {
     //横向检测
-    int i, j;
 
     const short row = board.rows[x] >> ((p - 1) * 16);
-    if (rowWin(row, y)) {
+    if (rowWin(row)) {
         return true;
     }
     /*
@@ -29,35 +23,21 @@ bool win(const int x, const int y, const int M, const int N, const Board &board,
 
     //纵向检测
     const short col = board.cols[y] >> ((p - 1) * 16);
-    if (rowWin(col, x)) {
+    if (rowWin(col)) {
         return true;
     }
 
     //左下-右上
-    int count = 0;
-    for (i = x, j = y; i < M && j >= 0; i++, j--)
-        if (!get(board, i, j, p))
-            break;
-    count += (y - j);
-    for (i = x, j = y; i >= 0 && j < N; i--, j++)
-        if (!get(board, i, j, p))
-            break;
-    count += (j - y - 1);
-    if (count >= 4)
+    const short slanted_left = board.slanted_left[x + y] >> ((p - 1) * 16);
+    if (rowWin(slanted_left)) {
         return true;
+    }
 
     //左上-右下
-    count = 0;
-    for (i = x, j = y; i >= 0 && j >= 0; i--, j--)
-        if (!get(board, i, j, p))
-            break;
-    count += (y - j);
-    for (i = x, j = y; i < M && j < N; i++, j++)
-        if (!get(board, i, j, p))
-            break;
-    count += (j - y - 1);
-    if (count >= 4)
+    const short slanted_right = board.slanted_right[x - y + 11] >> ((p - 1) * 16);
+    if (rowWin(slanted_right)) {
         return true;
+    }
 
     return false;
 }

@@ -7,7 +7,7 @@
 
 #include "Node.h"
 
-constexpr static int MAX_SIZE = 4e6;
+constexpr static int MAX_SIZE = 2.5e6;
 
 Node *getNode();
 
