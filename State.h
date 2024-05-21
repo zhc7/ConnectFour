@@ -31,6 +31,13 @@ struct Board {
         slanted_right[i - j + 11] |= ((value == 1) << j) | ((value == 2) << (j + 16));
     }
 
+    void unset(int i, int j) {
+        rows[i] &= ~((1 << j) | (1 << (j + 16)));
+        cols[j] &= ~((1 << i) | (1 << (i + 16)));
+        slanted_left[i + j] &= ~((1 << j) | (1 << (j + 16)));
+        slanted_right[i - j + 11] &= ~((1 << j) | (1 << (j + 16)));
+    }
+
     Board(Board const &board) {
         copyFrom(board);
     }
