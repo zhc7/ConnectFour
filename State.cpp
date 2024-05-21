@@ -64,12 +64,14 @@ int State::simulate() const {
                 const char x = newState.top[y] - 1;
                 newState.board.set(x, y, newState.nextTurn);
                 if (win(x, y, M, N, newState.board, newState.nextTurn)) return newState.nextTurn;
-                if (win(x, y, M, N, newState.board, 3 - newState.nextTurn)) {
+                newState.board.unset(x, y);
+                newState.board.set(x, y, 3 - newState.nextTurn);
+                const bool enemyWin = win(x, y, M, N, newState.board, 3 - newState.nextTurn);
+                newState.board.unset(x, y);
+                if (enemyWin) {
                     selected = true;
-                    newState.board.unset(x, y);
                     break;
                 }
-                newState.board.unset(x, y);
             }
         }
         if (!selected) {
