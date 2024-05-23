@@ -21,6 +21,7 @@ Node *Node::select() {
     Node *selected = nullptr;
     float bestValue = -1;
     char candidateMustWin = -1;
+    bool allMustWin = true;
     const float sqrtLogVisit = UCB_C * sqrtf(2 * log(visits));
     for (Node *child: children) {
         if (child != nullptr) {
@@ -30,8 +31,8 @@ Node *Node::select() {
                 handleMustWin(state.nextTurn);
                 // return this;
             }
-            if (child->state.mustWin != 0) {
-                // continue;
+            if (child->state.mustWin == 0) {
+                allMustWin = false;
             }
             const float uctValue = child->ucbValue(sqrtLogVisit);
             if (uctValue > bestValue) {
@@ -40,7 +41,7 @@ Node *Node::select() {
             }
         }
     }
-    if (!state.mustWin && candidateMustWin != -1) {
+    if (allMustWin && candidateMustWin != -1) {
         handleMustWin(candidateMustWin);
         // return this;
     }
