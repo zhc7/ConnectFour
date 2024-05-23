@@ -75,7 +75,7 @@ int State::simulate() const {
     char turn = nextTurn;
     short avail = this->avail;
     char top[16];
-    std::memcpy(top, this->top, sizeof(top));
+    std::memcpy(top, this->top, sizeof(this->top));
     top[12] = -1;
     top[15] = -1;
     int charge_r[12]{};
@@ -103,35 +103,38 @@ int State::simulate() const {
         bool selected = false;
         // check must win places
         for (y = 0; y < N; y++) {
-            int x = top[y] - 1;
+            const int x = top[y] - 1;
             if (x < 0) continue;
+            constexpr int mask = 0b10001;
+            const int off1 = (turn - 1) * 16;
             if (
-                charge_r[x] & (0b10001 << (y + (turn - 1) * 16) >> 1)
-                || charge_c[y] & (0b10001 << (x + (turn - 1) * 16) >> 1)
-                || charge_sl[x + y] & (0b10001 << (y + (turn - 1) * 16) >> 1)
-                || charge_sr[x - y + 11] & (0b10001 << (y + (turn - 1) * 16) >> 1)
-                || jump_r[x] & (1 << (y + (turn - 1) * 16))
-                || jump_c[y] & (1 << (x + (turn - 1) * 16))
-                || jump_sl[x + y] & (1 << (y + (turn - 1) * 16))
-                || jump_sr[x - y + 11] & (1 << (y + (turn - 1) * 16))
+                charge_r[x] & (mask << (y + off1) >> 1)
+                || charge_c[y] & (mask << (x + off1) >> 1)
+                || charge_sl[x + y] & (mask << (y + off1) >> 1)
+                || charge_sr[x - y + 11] & (mask << (y + off1) >> 1)
+                || jump_r[x] & (1 << (y + off1))
+                || jump_c[y] & (1 << (x + off1))
+                || jump_sl[x + y] & (1 << (y + off1))
+                || jump_sr[x - y + 11] & (1 << (y + off1))
             ) {
-                b.set(x, y, turn);
-                // assert(win(x, y, b, turn));
+                // b.set(x, y, turn);
+                // assert(win(x, y, M, N, b, turn));
                 return turn;
             }
+            const int off2 = (2 - turn) * 16;
             if (
-                charge_r[x] & (0b10001 << (y + (3 - turn) * 16)) >> 1
-                || charge_c[y] & (0b10001 << (x + (3 - turn) * 16)) >> 1
-                || charge_sl[x + y] & (0b10001 << (y + (3 - turn) * 16)) >> 1
-                || charge_sr[x - y + 11] & (0b10001 << (y + (3 - turn) * 16)) >> 1
-                || jump_r[x] & (1 << (y + (3 - turn) * 16))
-                || jump_c[y] & (1 << (x + (3 - turn) * 16))
-                || jump_sl[x + y] & (1 << (y + (3 - turn) * 16))
-                || jump_sr[x - y + 11] & (1 << (y + (3 - turn) * 16))
+                charge_r[x] & (mask << (y + off2) >> 1)
+                || charge_c[y] & (mask << (x + off2) >> 1)
+                || charge_sl[x + y] & (mask << (y + off2) >> 1)
+                || charge_sr[x - y + 11] & (mask << (y + off2) >> 1)
+                || jump_r[x] & (1 << (y + off2))
+                || jump_c[y] & (1 << (x + off2))
+                || jump_sl[x + y] & (1 << (y + off2))
+                || jump_sr[x - y + 11] & (1 << (y + off2))
             ) {
-                b.set(x, y, turn);
-                // assert(win(x, y, b, 3 - turn));
-                b.unset(x, y);
+                // b.set(x, y, 3 - turn);
+                // assert(win(x, y, M, N, b, 3 - turn));
+                // b.unset(x, y);
                 selected = true;
                 break;
             }
@@ -154,7 +157,7 @@ int State::simulate() const {
         if (avail == 0) {
             return 3;
         }
-        // assert(!win(x, y, b, turn));
+        // assert(!win(x, y, M, N, b, turn));
         // update charge and jump
         charge_r[x] = hot(b.rows[x]);
         charge_c[y] = hot(b.cols[y]);

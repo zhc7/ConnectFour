@@ -57,8 +57,8 @@ struct BoardSlanted : Board {
         std::memset(slanted_right, 0, sizeof(slanted_right));
         for (int i = 0; i < 12; i++) {
             for (int j = 0; j < 12; j++) {
-                slanted_left[i + j] |= ((board.rows[i] >> j) & 1) | ((board.rows[i] >> (j + 16)) & 1) << 16;
-                slanted_right[i - j + 11] |= ((board.rows[i] >> j) & 1) | ((board.rows[i] >> (j + 16)) & 1) << 16;
+                slanted_left[i + j] |= board.rows[i] & (0x10001 << j);
+                slanted_right[i - j + 11] |= board.rows[i] & (0x10001 << j);
             }
         }
     }
