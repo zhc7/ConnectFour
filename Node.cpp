@@ -28,10 +28,10 @@ Node *Node::select() {
             candidateMustWin = std::max(candidateMustWin, child->state.mustWin);
             if (child->state.mustWin == state.nextTurn) {
                 handleMustWin(state.nextTurn);
-                return this;
+                // return this;
             }
             if (child->state.mustWin != 0) {
-                continue;
+                // continue;
             }
             const float uctValue = child->ucbValue(sqrtLogVisit);
             if (uctValue > bestValue) {
@@ -40,14 +40,15 @@ Node *Node::select() {
             }
         }
     }
-    if (selected == nullptr && candidateMustWin != -1) {
+    if (!state.mustWin && candidateMustWin != -1) {
         handleMustWin(candidateMustWin);
-        return this;
+        // return this;
     }
     return selected;
 }
 
 Node *Node::expand() {
+    if (state.mustWin) return this;
     const short avail = state.avail;
     int j = 0;
     int indexes[12];

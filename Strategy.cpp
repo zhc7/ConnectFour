@@ -151,7 +151,7 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
         path.push_back(node);
         while (!node->isLeaf) {
             node = node->select();
-            if (node->state.mustWin != 0) {
+            if (node->state.mustWin != 0 && false) {
                 // here node does not change when selecting, pop this node, let its parent select again
                 path.pop_back();
                 if (path.empty()) {
@@ -214,9 +214,9 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
         int best_y = -1;
         for (Node *child: Node::root->children) {
             y++;
-            if (child == nullptr || child->state.mustWin == 1) {
-                continue;
-            }
+            // if (child == nullptr || child->state.mustWin == 1) {
+            //     continue;
+            // }
             if (child->state.mustWin == 2) {
                 // seems impossible to reach
                 best_y = y;
