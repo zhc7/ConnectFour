@@ -141,7 +141,10 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
 #ifdef DEBUG
     while (actualSearches < 10000) {
 #else
-    while (chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - start).count() < TIME_LIMIT * 1000) {
+    while (
+        chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - start).count() < TIME_LIMIT * 1000
+        && Node::root->visits < MAX_SIZE - 150
+        ) {
 #endif
         std::vector<Node *> path;
         Node *node = Node::root;
