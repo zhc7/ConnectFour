@@ -196,9 +196,9 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
             for (int i = 0; i < N; i++) {
                 auto child = Node::root->children[i];
                 if (child != nullptr) {
-                    if (child->winRate > best) {
+                    if (child->visits > best) {
                         y = i;
-                        best = child->winRate;
+                        best = child->visits;
                     }
                     if (child->state.mustWin == 3) {
                         break;
