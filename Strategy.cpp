@@ -214,9 +214,9 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
         int best_y = -1;
         for (Node *child: Node::root->children) {
             y++;
-            // if (child == nullptr || child->state.mustWin == 1) {
-            //     continue;
-            // }
+            if (child == nullptr) {
+                continue;
+            }
             if (child->state.mustWin == 2) {
                 // seems impossible to reach
                 best_y = y;

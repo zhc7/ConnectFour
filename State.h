@@ -93,6 +93,7 @@ public:
     char top[12]{};
     char nextTurn = 0;
     char mustWin = 0;
+    bool won = false;
     short avail = 0;
 
     State();

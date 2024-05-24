@@ -29,6 +29,7 @@ Node *Node::select() {
             candidateMustWin = std::max(candidateMustWin, child->state.mustWin);
             if (child->state.mustWin == state.nextTurn) {
                 handleMustWin(state.nextTurn);
+                allMustWin = false;
                 // return this;
             }
             if (child->state.mustWin == 0) {
@@ -49,7 +50,9 @@ Node *Node::select() {
 }
 
 Node *Node::expand() {
-    if (state.mustWin) return this;
+    if (state.mustWin == 2 || state.won) {
+        return this;
+    }
     const short avail = state.avail;
     int j = 0;
     int indexes[12];
