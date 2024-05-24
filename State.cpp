@@ -4,6 +4,8 @@
 
 #include <random>
 #include "State.h"
+#include <iostream>
+
 #include "Judge.h"
 
 int State::M = -1;
@@ -65,6 +67,32 @@ int jump(const int row) {
     const int A = match & (row << 2);
     const int B = match & (row << 1);
     return (A >> 1) | (B >> 2);
+}
+
+void printBoard(const Board &board) {
+    std::cout << "  ";
+    for (int i = 0; i < State::N; i++) {
+        std::cout << i % 10 << ' ';
+    }
+    std::cout << std::endl;
+    for (int i = 0; i < State::N; i++) {
+        std::cout << i % 10 << ' ';
+        for (int j = 0; j < State::M; j++) {
+            if (State::BAN_X == i && State::BAN_Y == j) {
+                std::cout << 'X';
+            } else {
+                if (board.rows[i] & (1 << j)) {
+                    std::cout << 'A';
+                } else if (board.rows[i] & (1 << (j + 16))) {
+                    std::cout << 'O';
+                } else {
+                    std::cout << '.';
+                }
+            }
+            std::cout << ' ';
+        }
+        std::cout << std::endl;
+    }
 }
 
 int State::simulate() const {
