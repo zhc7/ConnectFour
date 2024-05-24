@@ -4,7 +4,7 @@ targets = Judge.cpp Strategy.cpp State.cpp Node.cpp mem.cpp
 all: so
 
 so:		# Make so for local test
-	g++ -Wall -std=c++11 -O2 -DLOG -fpic -shared $(targets) -o ../so/Strategy.so
+	g++ -Wall -std=c++11 -O3 -DSLOWER -DLOG -fpic -shared $(targets) -o ../so/Strategy.so
 	cp ../so/Strategy.so ../so/Strategy.2.so
 
 debug:	# Make so with -DDEBUG and -O0 for debug
