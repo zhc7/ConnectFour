@@ -126,16 +126,36 @@ int State::simulate() const {
         jump_sl[i] = jump(b.slanted_left[i]);
         jump_sr[i] = jump(b.slanted_right[i]);
     }
+    int y;
+    int last_y = -1;
+    int selected_y = -1;
     while (true) {
-        int y;
         bool selected = false;
         // check must win places
+        constexpr int mask = 0b10001;
+        const int off1 = (turn - 1) * 16;
+        const int px = top[last_y] - 1;
+        if (
+            px >= 0 && last_y != -1 && (
+            charge_r[px] & (mask << (last_y + off1) >> 1)
+            || charge_c[last_y] & (mask << (px + off1) >> 1)
+            || charge_sl[px + last_y] & (mask << (last_y + off1) >> 1)
+            || charge_sr[px - last_y + 11] & (mask << (last_y + off1) >> 1)
+            || jump_r[px] & (1 << (last_y + off1))
+            || jump_c[last_y] & (1 << (px + off1))
+            || jump_sl[px + last_y] & (1 << (last_y + off1))
+            || jump_sr[px - last_y + 11] & (1 << (last_y + off1))
+        )) {
+            // b.set(px, last_y, turn);
+            // assert(win(px, last_y, M, N, b, turn));
+            return turn;
+        }
         for (y = 0; y < N; y++) {
             const int x = top[y] - 1;
             if (x < 0) continue;
-            constexpr int mask = 0b10001;
-            const int off1 = (turn - 1) * 16;
+            const int off2 = (2 - turn) * 16;
             if (
+                last_y == -1 && (
                 charge_r[x] & (mask << (y + off1) >> 1)
                 || charge_c[y] & (mask << (x + off1) >> 1)
                 || charge_sl[x + y] & (mask << (y + off1) >> 1)
@@ -144,12 +164,11 @@ int State::simulate() const {
                 || jump_c[y] & (1 << (x + off1))
                 || jump_sl[x + y] & (1 << (y + off1))
                 || jump_sr[x - y + 11] & (1 << (y + off1))
-            ) {
+            )) {
                 // b.set(x, y, turn);
                 // assert(win(x, y, M, N, b, turn));
                 return turn;
             }
-            const int off2 = (2 - turn) * 16;
             if (
                 charge_r[x] & (mask << (y + off2) >> 1)
                 || charge_c[y] & (mask << (x + off2) >> 1)
@@ -163,16 +182,21 @@ int State::simulate() const {
                 // b.set(x, y, 3 - turn);
                 // assert(win(x, y, M, N, b, 3 - turn));
                 // b.unset(x, y);
+                if (selected) {
+                    // enemy has two must win places
+                    return 3 - turn;
+                }
                 selected = true;
-                break;
+                selected_y = y;
             }
         }
         // rollout
         if (!selected) {
-            y = randomTable[random() % randomIndex];
-            while (!(avail & (1 << y))) {
+            do {
                 y = randomTable[random() % randomIndex];
-            }
+            } while (!(avail & (1 << y)));
+        } else {
+            y = selected_y;
         }
         // step
         top[y]--;
@@ -196,5 +220,6 @@ int State::simulate() const {
         jump_sl[x + y] = jump(b.slanted_left[x + y]);
         jump_sr[x - y + 11] = jump(b.slanted_right[x - y + 11]);
         turn = 3 - turn;
+        last_y = y;
     }
 }
