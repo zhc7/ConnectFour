@@ -14,9 +14,9 @@ using namespace std;
 #ifdef QUICKER
 constexpr double TIME_LIMIT = 1.5;
 #elif defined(SLOWER)
-constexpr double TIME_LIMIT = 2.5;
+constexpr double TIME_LIMIT = 2.7;
 #else
-constexpr double TIME_LIMIT = 2;
+constexpr double TIME_LIMIT = 2.5;
 #endif
 static int step = 0;
 static int rounds = 0;
@@ -142,13 +142,13 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
     int actualSearches = 0;
     bool mustWin = false;
 #ifdef DEBUG
-    while (actualSearches < 10000) {
+    while (actualSearches < 250000
 #else
     while (
         chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - start).count() < TIME_LIMIT * 1000
-        && Node::root->visits < MAX_SIZE - 150
-        ) {
 #endif
+        && MAX_SIZE - poolSize + freeStackTop > 100
+        ) {
         std::vector<Node *> path;
         Node *node = Node::root;
         path.push_back(node);
@@ -169,9 +169,7 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
         if (mustWin) {
             break;
         }
-        auto selected = node->expand();
-        path.push_back(selected);
-        const int result = selected->state.simulate();
+        const int result = node->expand();
         for (Node *n: path) {
             n->update(result);
         }
@@ -249,6 +247,7 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
 
     auto now = chrono::system_clock::now();
     std::cerr << "Actual Time: " << chrono::duration_cast<chrono::milliseconds>(now - start).count() << "ms" << std::endl;
+    std::cerr << "Used Nodes: " << poolSize - freeStackTop << std::endl;
 // #endif
 
     /*

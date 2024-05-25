@@ -3,7 +3,7 @@
 //
 
 #include <cmath>
-#include<algorithm>
+#include <algorithm>
 #include "Node.h"
 #include "mem.h"
 
@@ -47,7 +47,8 @@ Node *Node::select() {
     return selected;
 }
 
-Node *Node::expand() {
+int Node::expand() {
+    // find avail children actions
     const short avail = state.avail;
     int j = 0;
     int indexes[12];
@@ -61,13 +62,48 @@ Node *Node::expand() {
         isLeaf = false;
     }
     const int target = indexes[random() % j];
+    return expandAction(target);
+}
+
+int Node::expandAction(const int target) {
     const auto child = getNode();
     state.step(target, child->state);
     children[target] = child;
+
+    // check if must win
+    HeavyBoard b(child->state.board);
+    const auto turn = child->state.nextTurn;
+    char only_child = -1;
+    for (int i = 0; i < State::N; i++) {
+        const int x = child->state.top[i] - 1;
+        if (x >= 0) {
+            if (b.mustWin(x, i, turn)) {
+                child->state.mustWin = turn;
+                break;
+            }
+            if (b.mustWin(x, i, 3 - turn)) {
+                if (only_child == -1) {
+                    only_child = i;
+                } else {
+                    only_child = -1; // use normal simulation branch later
+                    child->state.mustWin = 3 - turn;
+                    break;
+                }
+            }
+        }
+    }
+    int sim_winner;
+    if (only_child == -1) {
+        sim_winner = child->state.simulate(b, target);
+    } else {
+        sim_winner = child->expandAction(only_child);
+        child->isLeaf = false;
+    }
+    child->update(sim_winner);
     if (child->state.mustWin == state.nextTurn) {
         state.mustWin = state.nextTurn;
     }
-    return child;
+    return sim_winner;
 }
 
 void Node::update(const int winner) {

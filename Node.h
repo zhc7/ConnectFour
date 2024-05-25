@@ -27,7 +27,7 @@ public:
 
     Node *select();
 
-    Node *expand();
+    int expand();
 
     void update(int winner);
 
@@ -37,6 +37,8 @@ public:
 
 protected:
     void handleMustWin(char winner);
+
+    int expandAction(int target);
 };
 
 #endif //CONNECT4_NODE_H

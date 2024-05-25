@@ -62,7 +62,7 @@ bool win(const int x, const int y, const int M, const int N, const Board &board,
     return false;
 }
 
-bool win(const int x, const int y, const BoardSlanted &board, const char p) {
+bool win(const int x, const int y, const HeavyBoard &board, const char p) {
     return rowWin(board.rows[x] >> ((p - 1) * 16)) ||
            rowWin(board.cols[y] >> ((p - 1) * 16)) ||
            rowWin(board.slanted_left[x + y] >> ((p - 1) * 16)) ||

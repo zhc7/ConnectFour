@@ -8,6 +8,8 @@
 #include "Node.h"
 
 constexpr static int MAX_SIZE = 4e6;
+extern int poolSize;
+extern int freeStackTop;
 
 Node *getNode();
 

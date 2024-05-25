@@ -5,10 +5,10 @@
 #include "mem.h"
 
 static Node pool[MAX_SIZE];
-static int poolSize = 0;
+int poolSize = 0;
 
 static Node *freeStack[MAX_SIZE];
-static int freeStackTop = 0;
+int freeStackTop = 0;
 
 
 Node *getNode() {

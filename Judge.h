@@ -49,7 +49,7 @@
 //bool machineWin(const int x, const int y, const int M, const int N, const Board &board);
 
 bool win(int x, int y, int M, int N, const Board &board, char p);
-bool win(int x, int y, const BoardSlanted &board, char p);
+bool win(int x, int y, const HeavyBoard &board, char p);
 
 /*
 	为了减少计算量，该函数通过直接检测棋盘是否已满来进行平局判断，而不是对棋盘进行全盘检测
