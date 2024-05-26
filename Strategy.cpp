@@ -139,16 +139,6 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
         Node::root = Node::root->pick(lastY);
     }
 
-    // root must be expanded
-    if (Node::root->isLeaf) {
-        for (int i = 0; i < N; i++) {
-            if (Node::root->children[i] == nullptr) {
-                Node::root->update(Node::root->expandAction(i));
-            }
-            Node::root->isLeaf = false;
-        }
-    }
-
     int actualSearches = 0;
     bool mustWin = Node::root->state.mustWin != 0;
 #ifdef DEBUG
@@ -244,11 +234,29 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
 
     x = top[y] - 1;
 
-    if (Node::root->children[y] == nullptr) {
-        Node::root->children[y] = getNode();
-        Node::root->state.step(y, Node::root->children[y]->state);
-    }
     Node::root = Node::root->pick(y);
+
+    // ememy may make any stupid move, so fully expand here
+    int valid = -1;
+    for (int i = 0; i < N; i++) {
+        if (Node::root->children[i] != nullptr) {
+            valid = i;
+            break;
+        }
+    }
+    for (int i = 0; i < N; i++) {
+        if (Node::root->children[i] == nullptr) {
+            // nullptr here means nonsense move that are skipped when expanding, we should have must-win policy now
+            const auto child = getNode();
+            Node::root->children[i] = child;
+            child->state.mustWin = 2;
+            child->state.nextTurn = 2;
+            for (int j = 0; j < N; j++) {
+                child->children[j] = nullptr;
+            }
+            child->children[valid] = getNode();
+        }
+    }
 
 // #ifdef LOG
     std::cerr << "Selected: " << x << " " << y << std::endl;
