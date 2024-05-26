@@ -5,6 +5,7 @@
 #include "Point.h"
 #include "Strategy.h"
 
+#include "Judge.h"
 #include "mem.h"
 #include "Node.h"
 #include "State.h"
@@ -137,6 +138,22 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
         start -= chrono::milliseconds(500);
     } else {
         Node::root = Node::root->pick(lastY);
+    }
+
+    // root must be expanded to avoid skipping-caused RE
+    if (Node::root->isLeaf && Node::root->state.mustWin) {
+        auto board = Node::root->state.board;
+        for (int i = 0; i < N; i++) {
+            if (top[i] > 0 && Node::root->children[i] == nullptr) {
+                board.set(top[i] - 1, i, 2);
+                if (win(top[i] - 1, i, M, N, board, 2)) {
+                    Node::root->children[i] = getNode();
+                    Node::root->children[i]->state.mustWin = 2;
+                    break;
+                }
+                board.unset(top[i] - 1, i);
+            }
+        }
     }
 
     int actualSearches = 0;
