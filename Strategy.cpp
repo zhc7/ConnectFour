@@ -255,26 +255,19 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
     Node::root = Node::root->pick(y);
 
     // ememy may make any stupid move, so fully expand here
-    int valid = -1;
     for (int i = 0; i < N; i++) {
-        if (Node::root->children[i] != nullptr) {
-            valid = i;
-            break;
-        }
-    }
-    for (int i = 0; i < N; i++) {
-        if (Node::root->children[i] == nullptr) {
+        const int x = Node::root->state.top[i] - 1;
+        if (Node::root->children[i] == nullptr && x >= 0) {
             // nullptr here means nonsense move that are skipped when expanding, we should have must-win policy now
             const auto child = getNode();
             Node::root->children[i] = child;
+            child->state.copyFrom(Node::root->state);
+            child->state.board.set(x, i, 1);
             child->state.mustWin = 2;
             child->state.nextTurn = 2;
             for (int j = 0; j < N; j++) {
                 child->children[j] = nullptr;
             }
-            const auto grandchild = getNode();
-            grandchild->state.mustWin = 2;
-            child->children[valid] = grandchild;
         }
     }
 
