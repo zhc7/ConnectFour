@@ -142,8 +142,9 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
     // root must be expanded
     for (int i = 0; i < N; i++) {
         if (Node::root->children[i] == nullptr) {
-            Node::root->expandAction(i);
+            Node::root->update(Node::root->expandAction(i));
         }
+        Node::root->isLeaf = false;
     }
 
     int actualSearches = 0;
