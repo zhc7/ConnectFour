@@ -35,10 +35,10 @@ public:
 
     ~Node() = default;
 
+    int expandAction(int target);
+
 protected:
     void handleMustWin(char winner);
-
-    int expandAction(int target);
 };
 
 #endif //CONNECT4_NODE_H

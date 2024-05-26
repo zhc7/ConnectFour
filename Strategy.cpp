@@ -139,6 +139,13 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
         Node::root = Node::root->pick(lastY);
     }
 
+    // root must be expanded
+    for (int i = 0; i < N; i++) {
+        if (Node::root->children[i] == nullptr) {
+            Node::root->expandAction(i);
+        }
+    }
+
     int actualSearches = 0;
     bool mustWin = Node::root->state.mustWin != 0;
 #ifdef DEBUG
