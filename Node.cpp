@@ -5,6 +5,8 @@
 #include <cmath>
 #include <algorithm>
 #include "Node.h"
+
+#include "Judge.h"
 #include "mem.h"
 
 Node *Node::root = nullptr;
@@ -67,11 +69,20 @@ int Node::expand() {
 
 int Node::expandAction(const int target) {
     const auto child = getNode();
+    const int x = state.top[target] - 1;
     state.step(target, child->state);
     children[target] = child;
 
     // check if must win
     HeavyBoard b(child->state.board);
+
+    if (win(x, target, b, state.nextTurn)) {
+        child->state.mustWin = state.nextTurn;
+        state.mustWin = state.nextTurn;
+        child->update(state.nextTurn);
+        return state.nextTurn;
+    }
+
     const auto turn = child->state.nextTurn;
     char only_child = -1;
     for (int i = 0; i < State::N; i++) {

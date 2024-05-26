@@ -140,7 +140,7 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
     }
 
     int actualSearches = 0;
-    bool mustWin = false;
+    bool mustWin = Node::root->state.mustWin != 0;
 #ifdef DEBUG
     while (actualSearches < 250000
 #else
