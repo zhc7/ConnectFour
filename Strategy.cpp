@@ -148,6 +148,7 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
         chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - start).count() < TIME_LIMIT * 1000
 #endif
         && MAX_SIZE - poolSize + freeStackTop > 100
+        && !mustWin
         ) {
         std::vector<Node *> path;
         Node *node = Node::root;
@@ -254,7 +255,9 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
             for (int j = 0; j < N; j++) {
                 child->children[j] = nullptr;
             }
-            child->children[valid] = getNode();
+            const auto grandchild = getNode();
+            grandchild->state.mustWin = 2;
+            child->children[valid] = grandchild;
         }
     }
 
