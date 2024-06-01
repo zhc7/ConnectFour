@@ -98,13 +98,12 @@ int Node::expandAction(const int target) {
                 } else {
                     only_child = -1; // use normal simulation branch later
                     child->state.mustWin = 3 - turn;
-                    break;
                 }
             }
         }
     }
     int sim_winner;
-    if (only_child == -1) {
+    if (only_child == -1 || child->state.mustWin == turn) {
         sim_winner = child->state.simulate(b, target);
     } else {
         sim_winner = child->expandAction(only_child);
